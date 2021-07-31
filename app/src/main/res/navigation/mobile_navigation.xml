@@ -3,23 +3,35 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_contacts">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/login_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.example.contactaddressbook.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        android:id="@+id/navigation_phone"
+        android:name="com.example.contactaddressbook.ui.home.PhoneFragment"
+        android:label="@string/title_phone"
+        tools:layout="@layout/fragment_phone" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/navigation_contacts"
         android:name="com.example.contactaddressbook.ui.contacts.ContactsFragment"
-        android:label="@string/title_dashboard"
+        android:label="@string/title_contacts"
         tools:layout="@layout/fragment_contacts" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.contactaddressbook.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_new_contact"
+        android:name="com.example.contactaddressbook.ui.notifications.NewContactFragment"
+        android:label="@string/title_new_contact"
+        tools:layout="@layout/fragment_new_contact" />
 </navigation>

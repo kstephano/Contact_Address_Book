@@ -1,6 +1,6 @@
 package com.example.contactaddressbook.modelClasses;
 
-public class User {
+public class User implements Comparable<User> {
 
     private int tel;
     private String firstName;
@@ -21,6 +21,11 @@ public class User {
         this.city = city;
         this.postcode = postcode;
         this.email = email;
+    }
+
+    @Override
+    public int compareTo(User otherUser) {
+        return this.firstName.compareTo(otherUser.getFirstName());
     }
 
     public int getTel() {
