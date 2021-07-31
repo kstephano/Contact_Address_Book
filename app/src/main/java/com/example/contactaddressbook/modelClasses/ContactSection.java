@@ -5,9 +5,9 @@ import java.util.List;
 public class ContactSection {
 
     private String sectionName;
-    private List<String> sectionItems;
+    private List<User> sectionItems;
 
-    public ContactSection(String sectionName, List<String> sectionItems) {
+    public ContactSection(String sectionName, List<User> sectionItems) {
         this.sectionName = sectionName;
         this.sectionItems = sectionItems;
     }
@@ -20,11 +20,11 @@ public class ContactSection {
         this.sectionName = sectionName;
     }
 
-    public List<String> getSectionItems() {
+    public List<User> getSectionItems() {
         return sectionItems;
     }
 
-    public void setSectionItems(List<String> sectionItems) {
+    public void setSectionItems(List<User> sectionItems) {
         this.sectionItems = sectionItems;
     }
 
