@@ -1,13 +1,13 @@
 package com.example.contactaddressbook.modelClasses;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class ContactSection {
 
     private String sectionName;
-    private List<User> sectionItems;
+    private ArrayList<User> sectionItems;
 
-    public ContactSection(String sectionName, List<User> sectionItems) {
+    public ContactSection(String sectionName, ArrayList<User> sectionItems) {
         this.sectionName = sectionName;
         this.sectionItems = sectionItems;
     }
@@ -20,11 +20,11 @@ public class ContactSection {
         this.sectionName = sectionName;
     }
 
-    public List<User> getSectionItems() {
+    public ArrayList<User> getSectionItems() {
         return sectionItems;
     }
 
-    public void setSectionItems(List<User> sectionItems) {
+    public void setSectionItems(ArrayList<User> sectionItems) {
         this.sectionItems = sectionItems;
     }
 
