@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "696555210262",
+    "project_id": "contact-list-7efe3",
+    "storage_bucket": "contact-list-7efe3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:696555210262:android:849325ee0af81605035737",
+        "android_client_info": {
+          "package_name": "com.example.contactaddressbook"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "696555210262-j9lcogdsa32e6suhr85muovkkrv5dv5q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkXeNH2QAuHRHbYXgOMQFxRhPo40efJ7k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "696555210262-j9lcogdsa32e6suhr85muovkkrv5dv5q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
