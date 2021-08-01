@@ -1,4 +1,4 @@
-package com.example.contactaddressbook.ui.home;
+package com.example.contactaddressbook.ui.phone;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

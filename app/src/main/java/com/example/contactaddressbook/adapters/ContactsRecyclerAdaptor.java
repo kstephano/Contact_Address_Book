@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import com.example.contactaddressbook.R;
 import com.example.contactaddressbook.modelClasses.ContactSection;
-import com.example.contactaddressbook.modelClasses.User;
+import com.example.contactaddressbook.modelClasses.Contact;
 
 import java.util.ArrayList;
 
@@ -36,7 +36,7 @@ public class ContactsRecyclerAdaptor extends RecyclerView.Adapter<ContactsRecycl
 
         ContactSection section = sectionList.get(position);
         String sectionName = section.getSectionName();
-        ArrayList<User> items = section.getSectionItems();
+        ArrayList<Contact> items = section.getSectionItems();
 
         holder.sectionNameTextView.setText(sectionName);
 

@@ -5,21 +5,9 @@
     android:id="@+id/mobile_navigation"
     app:startDestination="@+id/navigation_contacts">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/login_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/colorPrimary"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
-
     <fragment
         android:id="@+id/navigation_phone"
-        android:name="com.example.contactaddressbook.ui.home.PhoneFragment"
+        android:name="com.example.contactaddressbook.ui.phone.PhoneFragment"
         android:label="@string/title_phone"
         tools:layout="@layout/fragment_phone" />
 
@@ -31,7 +19,11 @@
 
     <fragment
         android:id="@+id/navigation_new_contact"
-        android:name="com.example.contactaddressbook.ui.notifications.NewContactFragment"
+        android:name="com.example.contactaddressbook.ui.newcontact.NewContactFragment"
         android:label="@string/title_new_contact"
-        tools:layout="@layout/fragment_new_contact" />
+        tools:layout="@layout/new_contact_fragment" >
+        <action
+            android:id="@+id/action_navigation_new_contact_to_navigation_contacts"
+            app:destination="@id/navigation_contacts" />
+    </fragment>
 </navigation>

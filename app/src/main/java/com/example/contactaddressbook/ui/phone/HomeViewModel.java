@@ -1,4 +1,4 @@
-package com.example.contactaddressbook.ui.home;
+package com.example.contactaddressbook.ui.phone;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

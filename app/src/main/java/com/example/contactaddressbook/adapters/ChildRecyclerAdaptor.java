@@ -9,16 +9,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.contactaddressbook.R;
-import com.example.contactaddressbook.modelClasses.User;
+import com.example.contactaddressbook.modelClasses.Contact;
 
 import java.util.ArrayList;
 
 public class ChildRecyclerAdaptor extends RecyclerView.Adapter<ChildRecyclerAdaptor.viewHolder> {
 
-    ArrayList<User> users;
+    ArrayList<Contact> contacts;
 
-    public ChildRecyclerAdaptor(ArrayList<User> users) {
-        this.users = users;
+    public ChildRecyclerAdaptor(ArrayList<Contact> contacts) {
+        this.contacts = contacts;
     }
 
     @NonNull
@@ -32,12 +32,12 @@ public class ChildRecyclerAdaptor extends RecyclerView.Adapter<ChildRecyclerAdap
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
         holder.itemTextView.setText(
-                users.get(position).getFirstName() + " " + users.get(position).getLastName());
+                contacts.get(position).getFirstName() + " " + contacts.get(position).getLastName());
     }
 
     @Override
     public int getItemCount() {
-        return users.size();
+        return contacts.size();
     }
 
     class viewHolder extends RecyclerView.ViewHolder {

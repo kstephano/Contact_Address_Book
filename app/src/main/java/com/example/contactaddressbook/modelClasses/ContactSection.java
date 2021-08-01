@@ -5,9 +5,9 @@ import java.util.ArrayList;
 public class ContactSection {
 
     private String sectionName;
-    private ArrayList<User> sectionItems;
+    private ArrayList<Contact> sectionItems;
 
-    public ContactSection(String sectionName, ArrayList<User> sectionItems) {
+    public ContactSection(String sectionName, ArrayList<Contact> sectionItems) {
         this.sectionName = sectionName;
         this.sectionItems = sectionItems;
     }
@@ -20,11 +20,11 @@ public class ContactSection {
         this.sectionName = sectionName;
     }
 
-    public ArrayList<User> getSectionItems() {
+    public ArrayList<Contact> getSectionItems() {
         return sectionItems;
     }
 
-    public void setSectionItems(ArrayList<User> sectionItems) {
+    public void setSectionItems(ArrayList<Contact> sectionItems) {
         this.sectionItems = sectionItems;
     }
 
