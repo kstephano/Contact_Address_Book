@@ -53,7 +53,6 @@ public class NewContactFragment extends Fragment {
 
     // xml variables
     private View root;
-    private Toolbar toolbar;
     private CircleImageView profileIV;
     private EditText firstNameET;
     private EditText lastNameET;
@@ -68,44 +67,12 @@ public class NewContactFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        /*
-        newContactViewModel =
-           new ViewModelProvider(this).get(NewContactViewModel.class);
-        View root = inflater.inflate(R.layout.new_contact_fragment, container, false);
 
-        binding = DataBindingUtil.inflate(inflater, R.layout.new_contact_fragment, container, false);
-        binding = NewContactFragmentBinding.inflate(inflater, container, false);
-        newContactViewModel = new ViewModelProvider(this).get(NewContactViewModel.class);
-        View root = binding.getRoot();
-        binding.setNewContactViewModel(newContactViewModel);
-
-
-        /*
-        final EditText firstNameET = root.findViewById(R.id.edit_text_first_name);
-        final EditText lastNameET = root.findViewById(R.id.edit_text_last_name);
-        final EditText phoneET = root.findViewById(R.id.edit_text_telephone);
-        final EditText emailET = root.findViewById(R.id.edit_text_email);
-        final EditText dobET = root.findViewById(R.id.edit_text_dob);
-        final EditText streetOneET = root.findViewById(R.id.edit_text_street_one);
-        final EditText streetTwoET = root.findViewById(R.id.edit_text_street_two);
-        final EditText cityET = root.findViewById(R.id.edit_text_city);
-        final EditText postcodeET = root.findViewById(R.id.edit_text_postcode);
-        */
-        /*
-        newContactViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
-         */
         // initialise Firebase variables
         firebaseFirestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference("ImageFolder");
 
         root = inflater.inflate(R.layout.fragment_new_contact, container, false);
-        toolbar = root.findViewById(R.id.toolbar_new_contact);
-        toolbar.setTitle(getResources().getString(R.string.title_new_contact));
 
         initialiseViews();
         setOnClickListenerImageIV();

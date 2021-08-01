@@ -25,15 +25,12 @@ public class ContactsFragment extends Fragment {
     private ContactsViewModel contactsViewModel;
 
     private View root;
-    private Toolbar toolbar;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         contactsViewModel =
                 new ViewModelProvider(this).get(ContactsViewModel.class);
         root = inflater.inflate(R.layout.fragment_contacts, container, false);
-        toolbar = root.findViewById(R.id.toolbar_contacts);
-        toolbar.setTitle(getResources().getString(R.string.title_contacts));
 
         contactsViewModel.getUserSections().observe(getViewLifecycleOwner(),
                 new Observer<ArrayList<ContactSection>>() {

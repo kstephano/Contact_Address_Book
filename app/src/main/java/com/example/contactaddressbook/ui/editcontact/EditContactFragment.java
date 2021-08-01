@@ -73,7 +73,6 @@ public class EditContactFragment extends Fragment {
     private String TAG = "EditContactFragment";
     private String contactID;
     private Uri profileImageURL;
-    private Boolean isFragmentVisible;
     private Boolean isImageUpdated = false;
     private Calendar calendar = Calendar.getInstance();
 
@@ -169,7 +168,6 @@ public class EditContactFragment extends Fragment {
     private void initialiseToolbar() {
         toolbar = root.findViewById(R.id.toolbar_edit);
         toolbar.inflateMenu(R.menu.edit_contact_menu);
-        toolbar.setTitle(getToolbarTitle());
 
         // set the back button for the toolbar
         toolbar.setOnMenuItemClickListener(item -> {

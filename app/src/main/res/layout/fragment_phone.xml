@@ -18,7 +18,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:titleTextColor="@color/black"
         app:collapsedTitleGravity ="bottom|center_horizontal"
-        android:background="@color/light_grey" />
+        android:background="@color/light_grey">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/title_phone"
+            android:textSize="20sp" />
+    </androidx.appcompat.widget.Toolbar>
 
     <TextView
         android:id="@+id/text_home"
