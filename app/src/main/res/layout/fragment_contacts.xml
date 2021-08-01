@@ -17,13 +17,14 @@
         app:layout_constraintLeft_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:titleTextColor="@color/black">
+        app:titleTextColor="@color/black"
+        app:contentInsetStart="0dp">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/toolbar_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
+            android:gravity="center_horizontal"
             android:text="@string/title_contacts"
             android:textSize="20sp" />
 

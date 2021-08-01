@@ -19,7 +19,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:titleTextColor="@color/black"
         app:collapsedTitleGravity ="bottom|center_horizontal"
-        android:background="@color/light_grey" >
+        android:background="@color/light_grey"
+        app:contentInsetStart="0dp">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/toolbar_title"
