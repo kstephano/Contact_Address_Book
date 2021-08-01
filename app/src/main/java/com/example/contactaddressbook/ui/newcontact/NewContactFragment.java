@@ -166,6 +166,7 @@ public class NewContactFragment extends Fragment {
                 if (task.isSuccessful()) {
                     // upload contact to Firestore
 
+                    contactData.put("contactID", contactID);
                     contactData.put("profileImageURL", task.getResult().toString());
                     contactData.put("firstName", firstNameET.getText().toString());
                     contactData.put("lastName", lastNameET.getText().toString());
@@ -182,8 +183,9 @@ public class NewContactFragment extends Fragment {
                             .set(contactData)
                             .addOnSuccessListener(aVoid -> {
                                 // navigate back to the contacts fragment
-                                Navigation.findNavController(root).navigate(
-                                        R.id.action_navigation_new_contact_to_navigation_contacts);
+                                Navigation.findNavController(getActivity(),
+                                        R.id.nav_host_fragment).
+                                        navigate(R.id.action_navigation_new_contact_to_navigation_contacts);
                                 Toast.makeText(getContext(), "Contact added", Toast.LENGTH_SHORT).show();
                             });
                 }
@@ -191,6 +193,7 @@ public class NewContactFragment extends Fragment {
         } else {
             // upload with null image url
             contactData.put("profileImageURL", "null");
+            contactData.put("contactID", contactID);
             contactData.put("firstName",  firstNameET.getText().toString());
             contactData.put("lastName", lastNameET.getText().toString());
             contactData.put("dob", dobET.getText().toString());

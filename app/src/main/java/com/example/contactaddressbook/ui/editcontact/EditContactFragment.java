@@ -35,6 +35,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -72,6 +73,7 @@ public class EditContactFragment extends Fragment {
     private String TAG = "EditContactFragment";
     private String contactID;
     private Uri profileImageURL;
+    private Boolean isFragmentVisible;
     private Boolean isImageUpdated = false;
     private Calendar calendar = Calendar.getInstance();
 
@@ -83,6 +85,7 @@ public class EditContactFragment extends Fragment {
         loadingDialog = new Dialog(getContext());
         loadingDialog.setContentView(R.layout.loading_dialog);
 
+        contactID = getArguments().getString("contactID");
         initialiseToolbar();
         initialiseViews();
         firebaseFirestore = FirebaseFirestore.getInstance();
@@ -177,7 +180,7 @@ public class EditContactFragment extends Fragment {
     }
 
     /**
-     * Get the toolbar title and unpack bundle.
+     * Get the toolbar title.
      * @return Title of the toolbar, made up of the contact's first name
      * and last name.
      */
@@ -185,10 +188,7 @@ public class EditContactFragment extends Fragment {
         String title;
         String firstName = getArguments().getString("firstName");
         String lastName = getArguments().getString("lastName");
-        String phone = getArguments().getString("phone");
-        contactID = firstName + lastName + phone;
         title = firstName + " " + lastName;
-
         return title;
     }
 
@@ -197,8 +197,6 @@ public class EditContactFragment extends Fragment {
      */
     private void upLoadToFirebase() {
         loadingDialog.show();
-        String contactID = firstNameET.getText().toString() + lastNameET.getText().
-                toString() + phoneET.getText().toString();
         Uri localProfileImageURL = profileImageURL;
 
         HashMap<String, Object> contactData = new HashMap<>();
@@ -220,7 +218,7 @@ public class EditContactFragment extends Fragment {
 
             // upload image to Firestore
             UploadTask uploadTask = imageRef.putFile(localProfileImageURL);
-            uploadTask.continueWithTask( task -> {
+            uploadTask.continueWithTask(task -> {
                 if (!task.isSuccessful()) {
                     Log.i(TAG, "Couldn't upload image");
                 }
@@ -237,33 +235,36 @@ public class EditContactFragment extends Fragment {
                             .addOnSuccessListener(aVoid -> {
                                 loadingDialog.hide();
                                 // navigate back to the contacts fragment
-                                Navigation.findNavController(root).navigate(
-                                        R.id.action_navigation_edit_contact_to_navigation_contacts);
+                                Navigation.findNavController(getActivity(),
+                                        R.id.nav_host_fragment).
+                                        navigate(R.id.action_navigation_edit_contact_to_navigation_contacts);
                                 Toast.makeText(getContext(),
                                         getResources().getString(R.string.toast_contact_updated),
                                         Toast.LENGTH_SHORT).show();
                             });
                 }
             });
-        } else if (isImageUpdated) {
-
+        }
+        if (isImageUpdated) {
             // remove the image URL from the database.
             contactData.put("profileImageURL", "null");
-
-            firebaseFirestore.collection("Contacts")
-                    .document(contactID)
-                    .update(contactData)
-                    .addOnSuccessListener(aVoid -> {
-                        // navigate back to the contacts fragment
-                        loadingDialog.hide();
-                        Navigation.findNavController(root).navigate(
-                                R.id.action_navigation_edit_contact_to_navigation_contacts);
-                        Toast.makeText(getContext(),
-                                getResources().getString(R.string.toast_contact_updated),
-                                Toast.LENGTH_SHORT).show();
-                    });
         }
-    }
+
+        firebaseFirestore.collection("Contacts")
+                .document(contactID)
+                .update(contactData)
+                .addOnSuccessListener(aVoid -> {
+                    // navigate back to the contacts fragment
+                    loadingDialog.hide();
+                    Navigation.findNavController(getActivity(),
+                            R.id.nav_host_fragment).
+                            navigate(R.id.action_navigation_edit_contact_to_navigation_contacts);
+                    Toast.makeText(getContext(),
+                            getResources().getString(R.string.toast_contact_updated),
+                            Toast.LENGTH_SHORT).show();
+                });
+        }
+
 
     /**
      * Get the extension for an image given a Uri.

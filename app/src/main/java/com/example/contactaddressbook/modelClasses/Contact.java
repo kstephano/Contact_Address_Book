@@ -3,6 +3,8 @@ package com.example.contactaddressbook.modelClasses;
 public class Contact implements Comparable<Contact> {
 
     private String phone;
+
+    private String contactID;
     private String firstName;
     private String lastName;
     private String dob;
@@ -13,10 +15,11 @@ public class Contact implements Comparable<Contact> {
     private String postcode;
     private String profileImageURL;
 
-    public Contact(String phone, String firstName, String lastName, String email, String dob,
+    public Contact(String contactID, String phone, String firstName, String lastName, String email, String dob,
                    String streetLineOne, String streetLineTwo, String city, String postcode,
                    String profileImageURL) {
         this.phone = phone;
+        this.contactID = contactID;
         this.firstName = firstName;
         this.lastName = lastName;
         this.dob = dob;
@@ -34,6 +37,8 @@ public class Contact implements Comparable<Contact> {
     public int compareTo(Contact otherContact) {
         return this.firstName.compareTo(otherContact.getFirstName());
     }
+
+    public String getContactID() { return contactID; }
 
     public String getPhone() {
         return phone;

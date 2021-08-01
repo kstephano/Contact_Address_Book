@@ -33,17 +33,17 @@ public class ChildRecyclerAdaptor extends RecyclerView.Adapter<ChildRecyclerAdap
 
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
-        holder.itemTextView.setText(
-                contacts.get(position).getFirstName() + " " + contacts.get(position).getLastName());
+        String firstName = contacts.get(position).getFirstName();
+        String lastName = contacts.get(position).getLastName();
+        String name = firstName + " " + lastName;
+        holder.itemTextView.setText(name);
         Bundle bundle = new Bundle();
-        bundle.putString("phone", contacts.get(position).getPhone());
+        bundle.putString("contactID", contacts.get(position).getContactID());
         bundle.putString("firstName", contacts.get(position).getFirstName());
         bundle.putString("lastName", contacts.get(position).getLastName());
 
-        holder.itemTextView.setOnClickListener(v -> {
-            Navigation.findNavController(v).navigate(
-                    R.id.action_navigation_contacts_to_navigation_edit_contact, bundle);
-        });
+        holder.itemTextView.setOnClickListener(v -> Navigation.findNavController(v).navigate(
+                    R.id.action_navigation_contacts_to_navigation_edit_contact, bundle));
     }
 
     @Override
