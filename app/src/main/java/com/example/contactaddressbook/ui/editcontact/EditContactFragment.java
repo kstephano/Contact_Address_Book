@@ -8,7 +8,10 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.telephony.PhoneNumberUtils;
+import android.text.TextUtils;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +33,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -70,6 +72,7 @@ public class EditContactFragment extends Fragment {
     private String TAG = "EditContactFragment";
     private String contactID;
     private Uri profileImageURL;
+    private Boolean isImageUpdated = false;
     private Calendar calendar = Calendar.getInstance();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -108,15 +111,6 @@ public class EditContactFragment extends Fragment {
         documentReference.get().addOnSuccessListener(documentSnapshot -> {
             String profilePicURL = documentSnapshot.getString("profileImageURL");
 
-            // load picture if not URL is not empty
-            if (!profilePicURL.equals("null")) {
-                Glide.with(getContext()).load(profilePicURL).into(profileIV);
-                profileImageURL = profileImageURL;
-                removePictureTV.setText(getResources().getString(R.string.text_remove_photo));
-            } else {
-                addPictureTV.setText(getResources().getString(R.string.text_add_photo));
-            }
-
             firstNameET.setText(documentSnapshot.getString("firstName"));
             lastNameET.setText(documentSnapshot.getString("lastName"));
             dobET.setText(documentSnapshot.getString("dob"));
@@ -127,10 +121,17 @@ public class EditContactFragment extends Fragment {
             cityET.setText(documentSnapshot.getString("city"));
             postcodeET.setText(documentSnapshot.getString("postcode"));
 
+            // load picture if not URL is not empty
+            if (!profilePicURL.equals("null")) {
+                Glide.with(getContext()).load(profilePicURL).into(profileIV);
+                removePictureTV.setText(getResources().getString(R.string.text_remove_photo));
+
+            } else {
+                addPictureTV.setText(getResources().getString(R.string.text_add_photo));
+            }
+
             loadingDialog.hide();
-        }).addOnFailureListener(e -> {
-            Log.d(TAG, "Failed to load contact: " + e.getMessage());
-        });
+        }).addOnFailureListener(e -> Log.d(TAG, "Failed to load contact: " + e.getMessage()));
     }
 
 
@@ -139,14 +140,24 @@ public class EditContactFragment extends Fragment {
      * @return True if valid, false otherwise.
      */
     private Boolean isFormValid() {
-        if (
-                !firstNameET.getText().toString().isEmpty() &&
-                        !lastNameET.getText().toString().isEmpty() &&
-                        (!phoneET.getText().toString().isEmpty() || !emailET.toString().isEmpty())
-        ) {
-            return true;
-        }
-        return false;
+        String firstName = firstNameET.getText().toString();
+        String lastName = lastNameET.getText().toString();
+        String phone = phoneET.getText().toString();
+        String email = emailET.getText().toString();
+
+        // validate firstName/lastName are filled and phone OR email is filled and valid.
+        return !firstName.isEmpty() && !lastName.isEmpty() &&
+                (!phone.isEmpty() && PhoneNumberUtils.isGlobalPhoneNumber(phone)) ||
+                (!email.isEmpty() && isValidEmail(email));
+    }
+
+    /**
+     * Check if the target input is a valid email address.
+     * @param target The char sequence to check.
+     * @return True if a valid email, false otherwise.
+     */
+    private Boolean isValidEmail(CharSequence target) {
+        return (!TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target).matches());
     }
 
     /**
@@ -185,14 +196,24 @@ public class EditContactFragment extends Fragment {
      * Uploads the form to Firebase, updating the contact.
      */
     private void upLoadToFirebase() {
-        Uri localProfileImageURL = profileImageURL;
-        HashMap<String, Object> contactData = new HashMap<>();
+        loadingDialog.show();
         String contactID = firstNameET.getText().toString() + lastNameET.getText().
                 toString() + phoneET.getText().toString();
-        loadingDialog.show();
+        Uri localProfileImageURL = profileImageURL;
 
-        // upload image if not null
-        if (localProfileImageURL != null) {
+        HashMap<String, Object> contactData = new HashMap<>();
+        contactData.put("firstName", firstNameET.getText().toString());
+        contactData.put("lastName", lastNameET.getText().toString());
+        contactData.put("dob", dobET.getText().toString());
+        contactData.put("email", emailET.getText().toString());
+        contactData.put("phone", phoneET.getText().toString());
+        contactData.put("streetLineOne", streetLineOneET.getText().toString());
+        contactData.put("streetLineTwo", streetLineTwoET.getText().toString());
+        contactData.put("city", cityET.getText().toString());
+        contactData.put("postcode", postcodeET.getText().toString());
+
+        // upload image updated
+        if (profileImageURL != null) {
             String imageName = lastNameET.getText().toString() +
                     phoneET.getText().toString() + "." + getExtension(localProfileImageURL);
             StorageReference imageRef = storageReference.child(imageName);
@@ -209,15 +230,6 @@ public class EditContactFragment extends Fragment {
                     // upload contact to Firestore
 
                     contactData.put("profileImageURL", task.getResult().toString());
-                    contactData.put("firstName", firstNameET.getText().toString());
-                    contactData.put("lastName", lastNameET.getText().toString());
-                    contactData.put("dob", dobET.getText().toString());
-                    contactData.put("email", emailET.getText().toString());
-                    contactData.put("phone", phoneET.getText().toString());
-                    contactData.put("streetLineOne", streetLineOneET.getText().toString());
-                    contactData.put("streetLineTwo", streetLineTwoET.getText().toString());
-                    contactData.put("city", cityET.getText().toString());
-                    contactData.put("postcode", postcodeET.getText().toString());
 
                     firebaseFirestore.collection("Contacts")
                             .document(contactID)
@@ -233,18 +245,10 @@ public class EditContactFragment extends Fragment {
                             });
                 }
             });
-        } else {
-            // upload with null image url
+        } else if (isImageUpdated) {
+
+            // remove the image URL from the database.
             contactData.put("profileImageURL", "null");
-            contactData.put("firstName",  firstNameET.getText().toString());
-            contactData.put("lastName", lastNameET.getText().toString());
-            contactData.put("dob", dobET.getText().toString());
-            contactData.put("email", emailET.getText().toString());
-            contactData.put("phone", phoneET.getText().toString());
-            contactData.put("streetLineOne", streetLineOneET.getText().toString());
-            contactData.put("streetLineTwo", streetLineTwoET.getText().toString());
-            contactData.put("city", cityET.getText().toString());
-            contactData.put("postcode", postcodeET.getText().toString());
 
             firebaseFirestore.collection("Contacts")
                     .document(contactID)
@@ -283,7 +287,7 @@ public class EditContactFragment extends Fragment {
      */
     private void setOnClickListenerUpdateBtn() {
         updateBtn.setOnClickListener(v -> {
-            if (isFormValid() == true) {
+            if (isFormValid()) {
                 upLoadToFirebase();
             } else {
                 Toast.makeText(getContext(), "Invalid contact", Toast.LENGTH_SHORT).show();
@@ -296,17 +300,15 @@ public class EditContactFragment extends Fragment {
      * Deletes the contact from the Firebase database.
      */
     private void setOnClickListenerDeleteBtn() {
-        deleteBtn.setOnClickListener(v -> {
-            firebaseFirestore.collection("Contacts")
-                    .document(contactID)
-                    .delete().addOnSuccessListener(aVoid -> {
-                // navigate back to the contacts fragment
-                Navigation.findNavController(root).navigate(
-                        R.id.action_navigation_edit_contact_to_navigation_contacts);
-                Toast.makeText(getContext(), getResources().
-                        getString(R.string.toast_contact_deleted), Toast.LENGTH_SHORT).show();
-            });
-        });
+        deleteBtn.setOnClickListener(v -> firebaseFirestore.collection("Contacts")
+                .document(contactID)
+                .delete().addOnSuccessListener(aVoid -> {
+            // navigate back to the contacts fragment
+            Navigation.findNavController(root).navigate(
+                    R.id.action_navigation_edit_contact_to_navigation_contacts);
+            Toast.makeText(getContext(), getResources().
+                    getString(R.string.toast_contact_deleted), Toast.LENGTH_SHORT).show();
+        }));
     }
 
     /**
@@ -324,6 +326,7 @@ public class EditContactFragment extends Fragment {
                         if (data.getData() != null) {
                             profileImageURL = data.getData();
                             profileIV.setImageURI(profileImageURL);
+                            isImageUpdated = true;
                             addPictureTV.setText("");
                             removePictureTV.setText(
                                     getResources().getString(R.string.text_remove_photo));
@@ -366,6 +369,7 @@ public class EditContactFragment extends Fragment {
             int image = R.drawable.ic_baseline_account_circle_24;
             profileIV.setImageResource(image);
             profileImageURL = null;
+            isImageUpdated = true;
             removePictureTV.setText("");
             addPictureTV.setText(getResources().getString(R.string.text_add_photo));
         });

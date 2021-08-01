@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -118,14 +120,24 @@ public class NewContactFragment extends Fragment {
      * @return True if valid, false otherwise.
      */
     private Boolean isFormValid() {
-        if (
-            !firstNameET.getText().toString().isEmpty() &&
-            !lastNameET.getText().toString().isEmpty() &&
-                    (!phoneET.getText().toString().isEmpty() || !emailET.toString().isEmpty())
-        ) {
-            return true;
-        }
-        return false;
+        String firstName = firstNameET.getText().toString();
+        String lastName = lastNameET.getText().toString();
+        String phone = phoneET.getText().toString();
+        String email = emailET.getText().toString();
+
+        // validate firstName/lastName are filled and phone OR email is filled and valid.
+        return !firstName.isEmpty() && !lastName.isEmpty() &&
+                (!phone.isEmpty() && PhoneNumberUtils.isGlobalPhoneNumber(phone)) ||
+                (!email.isEmpty() && isValidEmail(email));
+    }
+
+    /**
+     * Check if the target input is a valid email address.
+     * @param target The char sequence to check.
+     * @return True if a valid email, false otherwise.
+     */
+    private Boolean isValidEmail(CharSequence target) {
+        return (!TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target).matches());
     }
 
     /**
@@ -207,7 +219,7 @@ public class NewContactFragment extends Fragment {
      */
     private void setOnClickListenerSubmitBtn() {
         submitBtn.setOnClickListener(v -> {
-            if (isFormValid() == true) {
+            if (isFormValid()) {
                 upLoadToFirebase();
             } else {
                 Toast.makeText(getContext(), "Invalid contact", Toast.LENGTH_SHORT).show();
