@@ -13,4 +13,8 @@
     <color name="green_300">#81c784</color>
     <color name="green_dark">#519657</color>
     <color name="blue_300">#64b5f6</color>
+    <color name="red_400">#ff1744</color>
+    <color name="pink_100">#eac0ee</color>
+    <color name="pink_400">#c442d0</color>
+    <color name="pink_700">#940bba</color>
 </resources>

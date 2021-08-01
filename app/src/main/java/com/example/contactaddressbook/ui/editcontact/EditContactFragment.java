@@ -2,6 +2,7 @@ package com.example.contactaddressbook.ui.editcontact;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
@@ -19,9 +20,9 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.contactaddressbook.R;
-import com.example.contactaddressbook.modelClasses.Contact;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -29,6 +30,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -43,20 +45,23 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class EditContactFragment extends Fragment {
 
     // XML Views
-    View root;
-    Toolbar toolbar;
-    CircleImageView profileIV;
-    TextView addPictureTV;
-    EditText firstNameET;
-    EditText lastNameET;
-    EditText dobET;
-    EditText emailET;
-    EditText phoneET;
-    EditText streetLineOneET;
-    EditText streetLineTwoET;
-    EditText cityET;
-    EditText postcodeET;
-    Button updateBtn;
+    private View root;
+    private Toolbar toolbar;
+    private CircleImageView profileIV;
+    private TextView addPictureTV;
+    private TextView removePictureTV;
+    private EditText firstNameET;
+    private EditText lastNameET;
+    private EditText dobET;
+    private EditText emailET;
+    private EditText phoneET;
+    private EditText streetLineOneET;
+    private EditText streetLineTwoET;
+    private EditText cityET;
+    private EditText postcodeET;
+    private Button updateBtn;
+    private Button deleteBtn;
+    private Dialog loadingDialog;
 
     // Firebase
     private FirebaseFirestore firebaseFirestore;
@@ -64,7 +69,6 @@ public class EditContactFragment extends Fragment {
 
     private String TAG = "EditContactFragment";
     private String contactID;
-    private Contact contact;
     private Uri profileImageURL;
     private Calendar calendar = Calendar.getInstance();
 
@@ -72,14 +76,21 @@ public class EditContactFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
 
         root = inflater.inflate(R.layout.fragment_edit_contact, container, false);
+        // show the loading dialog
+        loadingDialog = new Dialog(getContext());
+        loadingDialog.setContentView(R.layout.loading_dialog);
+
         initialiseToolbar();
         initialiseViews();
         firebaseFirestore = FirebaseFirestore.getInstance();
+        storageReference = FirebaseStorage.getInstance().getReference("ImageFolder");
         loadContactData();
 
-        setOnClickListenerImageIV();
+        setOnClickListenersAddPhoto();
+        setOnClickListenerRemovePhoto();
         setOnClickListenerDobPicker();
         setOnClickListenerUpdateBtn();
+        setOnClickListenerDeleteBtn();
 
         return root;
     }
@@ -88,15 +99,22 @@ public class EditContactFragment extends Fragment {
      * Load the contact's data into the UI.
      */
     public void loadContactData() {
+        loadingDialog.show();
+        loadingDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
         DocumentReference documentReference = firebaseFirestore.collection("Contacts")
                 .document(contactID);
 
         documentReference.get().addOnSuccessListener(documentSnapshot -> {
             String profilePicURL = documentSnapshot.getString("profileImageURL");
 
-            // load picture if not null
-            if (profilePicURL != "null") {
+            // load picture if not URL is not empty
+            if (!profilePicURL.equals("null")) {
                 Glide.with(getContext()).load(profilePicURL).into(profileIV);
+                profileImageURL = profileImageURL;
+                removePictureTV.setText(getResources().getString(R.string.text_remove_photo));
+            } else {
+                addPictureTV.setText(getResources().getString(R.string.text_add_photo));
             }
 
             firstNameET.setText(documentSnapshot.getString("firstName"));
@@ -108,6 +126,8 @@ public class EditContactFragment extends Fragment {
             streetLineTwoET.setText(documentSnapshot.getString("streetLineTwo"));
             cityET.setText(documentSnapshot.getString("city"));
             postcodeET.setText(documentSnapshot.getString("postcode"));
+
+            loadingDialog.hide();
         }).addOnFailureListener(e -> {
             Log.d(TAG, "Failed to load contact: " + e.getMessage());
         });
@@ -162,11 +182,14 @@ public class EditContactFragment extends Fragment {
     }
 
     /**
-     * Uploads the form to Firebase, creating a new contact.
+     * Uploads the form to Firebase, updating the contact.
      */
     private void upLoadToFirebase() {
         Uri localProfileImageURL = profileImageURL;
         HashMap<String, Object> contactData = new HashMap<>();
+        String contactID = firstNameET.getText().toString() + lastNameET.getText().
+                toString() + phoneET.getText().toString();
+        loadingDialog.show();
 
         // upload image if not null
         if (localProfileImageURL != null) {
@@ -184,8 +207,6 @@ public class EditContactFragment extends Fragment {
             }).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     // upload contact to Firestore
-                    String contactID = firstNameET.getText().toString() + lastNameET.getText().toString() +
-                            phoneET.getText().toString();
 
                     contactData.put("profileImageURL", task.getResult().toString());
                     contactData.put("firstName", firstNameET.getText().toString());
@@ -200,21 +221,22 @@ public class EditContactFragment extends Fragment {
 
                     firebaseFirestore.collection("Contacts")
                             .document(contactID)
-                            .set(contactData)
+                            .update(contactData)
                             .addOnSuccessListener(aVoid -> {
+                                loadingDialog.hide();
                                 // navigate back to the contacts fragment
                                 Navigation.findNavController(root).navigate(
-                                        R.id.action_navigation_new_contact_to_navigation_contacts);
-                                Toast.makeText(getContext(), "Contact added", Toast.LENGTH_SHORT).show();
+                                        R.id.action_navigation_edit_contact_to_navigation_contacts);
+                                Toast.makeText(getContext(),
+                                        getResources().getString(R.string.toast_contact_updated),
+                                        Toast.LENGTH_SHORT).show();
                             });
                 }
             });
         } else {
             // upload with null image url
-            String contactID = firstNameET.getText().toString() + lastNameET.getText().toString() +
-                    phoneET.getText().toString();
             contactData.put("profileImageURL", "null");
-            contactData.put("firstName",  firstNameET.getText());
+            contactData.put("firstName",  firstNameET.getText().toString());
             contactData.put("lastName", lastNameET.getText().toString());
             contactData.put("dob", dobET.getText().toString());
             contactData.put("email", emailET.getText().toString());
@@ -226,15 +248,17 @@ public class EditContactFragment extends Fragment {
 
             firebaseFirestore.collection("Contacts")
                     .document(contactID)
-                    .set(contactData)
+                    .update(contactData)
                     .addOnSuccessListener(aVoid -> {
                         // navigate back to the contacts fragment
+                        loadingDialog.hide();
                         Navigation.findNavController(root).navigate(
-                                R.id.action_navigation_new_contact_to_navigation_contacts);
-                        Toast.makeText(getContext(), "Contact added", Toast.LENGTH_SHORT).show();
+                                R.id.action_navigation_edit_contact_to_navigation_contacts);
+                        Toast.makeText(getContext(),
+                                getResources().getString(R.string.toast_contact_updated),
+                                Toast.LENGTH_SHORT).show();
                     });
         }
-
     }
 
     /**
@@ -268,10 +292,29 @@ public class EditContactFragment extends Fragment {
     }
 
     /**
-     * Set the ActivityResultLauncher and onClickListener for the
-     * profile Image View. Opens up the image gallery onClick.
+     * Set the onClickListener for the delete button.
+     * Deletes the contact from the Firebase database.
      */
-    private void setOnClickListenerImageIV() {
+    private void setOnClickListenerDeleteBtn() {
+        deleteBtn.setOnClickListener(v -> {
+            firebaseFirestore.collection("Contacts")
+                    .document(contactID)
+                    .delete().addOnSuccessListener(aVoid -> {
+                // navigate back to the contacts fragment
+                Navigation.findNavController(root).navigate(
+                        R.id.action_navigation_edit_contact_to_navigation_contacts);
+                Toast.makeText(getContext(), getResources().
+                        getString(R.string.toast_contact_deleted), Toast.LENGTH_SHORT).show();
+            });
+        });
+    }
+
+    /**
+     * Set the ActivityResultLauncher and onClickListeners for the
+     * profile Image View and add photo Text View.
+     * Opens up the image gallery onClick.
+     */
+    private void setOnClickListenersAddPhoto() {
         // set the ActivityResultLauncher
         ActivityResultLauncher<Intent> imageGalleryResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -281,6 +324,9 @@ public class EditContactFragment extends Fragment {
                         if (data.getData() != null) {
                             profileImageURL = data.getData();
                             profileIV.setImageURI(profileImageURL);
+                            addPictureTV.setText("");
+                            removePictureTV.setText(
+                                    getResources().getString(R.string.text_remove_photo));
                         } else {
                             Toast.makeText(getContext(), "No image selected",
                                     Toast.LENGTH_SHORT).show();
@@ -289,15 +335,39 @@ public class EditContactFragment extends Fragment {
                 }
         );
 
-        // set the onClick for the image view
+        // set the onClick for the image view.
         profileIV.setOnClickListener(v -> {
             try {
                 Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                galleryIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+                galleryIntent.setDataAndType(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        "image/*");
                 imageGalleryResultLauncher.launch(galleryIntent);
             } catch (Exception e) {
                 Log.d(TAG, "Couldn't open image gallery: " + e.getMessage());
             }
+        });
+
+        // set the onClick for the text view.
+        addPictureTV.setOnClickListener(v -> {
+            try {
+                Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                galleryIntent.setDataAndType(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+                imageGalleryResultLauncher.launch(galleryIntent);
+            } catch (Exception e) {
+                Log.d(TAG, "Couldn't open image gallery: " + e.getMessage());
+            }
+        });
+    }
+
+    private void setOnClickListenerRemovePhoto() {
+        removePictureTV.setOnClickListener(v -> {
+            int image = R.drawable.ic_baseline_account_circle_24;
+            profileIV.setImageResource(image);
+            profileImageURL = null;
+            removePictureTV.setText("");
+            addPictureTV.setText(getResources().getString(R.string.text_add_photo));
         });
     }
 
@@ -337,6 +407,7 @@ public class EditContactFragment extends Fragment {
     private void initialiseViews() {
         profileIV = root.findViewById(R.id.image_view_profile);
         addPictureTV = root.findViewById(R.id.text_add_photo);
+        removePictureTV = root.findViewById(R.id.text_remove_photo);
         firstNameET = root.findViewById(R.id.edit_text_first_name);
         lastNameET = root.findViewById(R.id.edit_text_last_name);
         dobET = root.findViewById(R.id.edit_text_dob);
@@ -347,6 +418,7 @@ public class EditContactFragment extends Fragment {
         cityET = root.findViewById(R.id.edit_text_city);
         postcodeET = root.findViewById(R.id.edit_text_postcode);
         updateBtn = root.findViewById(R.id.button_submit);
+        deleteBtn = root.findViewById(R.id.button_delete);
     }
 
 }

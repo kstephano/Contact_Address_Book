@@ -5,7 +5,8 @@
     <string name="title_contacts">Contacts</string>
     <string name="title_new_contact">New Contact</string>
     <string name="title_phone">Phone</string>
-
+    <string name="title_edit_contact">Edit contact</string>
+    <string name="title_go_back">Go back</string>
 
     <!-- hint strings -->
     <string name="hint_first_name">First name</string>
@@ -18,9 +19,17 @@
     <string name="hint_city">Town/City</string>
     <string name="hint_postcode">Postcode</string>
 
-    <!-- -->
-    <string name="button_submit">Submit</string>
+    <!-- text strings -->
     <string name="text_add_photo">Add Photo</string>
-    <string name="title_edit_contact">Edit contact</string>
-    <string name="title_go_back">Go back</string>
+    <string name="text_remove_photo">Remove Photo</string>
+    <string name="text_loading">Loading</string>
+
+    <!-- button strings -->
+    <string name="button_submit">Submit</string>
+    <string name="button_update">Update</string>
+    <string name="button_delete">Delete</string>
+
+    <!-- toast message string -->
+    <string name="toast_contact_deleted">Contact deleted</string>
+    <string name="toast_contact_updated">Contact updated</string>
 </resources>

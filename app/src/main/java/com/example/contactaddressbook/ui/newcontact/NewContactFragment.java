@@ -134,6 +134,8 @@ public class NewContactFragment extends Fragment {
     private void upLoadToFirebase() {
         Uri localProfileImageURL = profileImageURL;
         HashMap<String, Object> contactData = new HashMap<>();
+        String contactID = firstNameET.getText().toString() + lastNameET.getText().toString() +
+                phoneET.getText().toString();
 
         // upload image if not null
         if (localProfileImageURL != null) {
@@ -151,8 +153,6 @@ public class NewContactFragment extends Fragment {
             }).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     // upload contact to Firestore
-                    String contactID = firstNameET.getText().toString() + lastNameET.getText().toString() +
-                            phoneET.getText().toString();
 
                     contactData.put("profileImageURL", task.getResult().toString());
                     contactData.put("firstName", firstNameET.getText().toString());
@@ -178,10 +178,8 @@ public class NewContactFragment extends Fragment {
             });
         } else {
             // upload with null image url
-            String contactID = firstNameET.getText().toString() + lastNameET.getText().toString() +
-                    phoneET.getText().toString();
             contactData.put("profileImageURL", "null");
-            contactData.put("firstName",  firstNameET.getText());
+            contactData.put("firstName",  firstNameET.getText().toString());
             contactData.put("lastName", lastNameET.getText().toString());
             contactData.put("dob", dobET.getText().toString());
             contactData.put("email", emailET.getText().toString());
