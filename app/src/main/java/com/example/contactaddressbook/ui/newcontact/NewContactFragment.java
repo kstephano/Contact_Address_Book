@@ -184,8 +184,7 @@ public class NewContactFragment extends Fragment {
                             .addOnSuccessListener(aVoid -> {
                                 // navigate back to the contacts fragment
                                 Navigation.findNavController(getActivity(),
-                                        R.id.nav_host_fragment).
-                                        navigate(R.id.action_navigation_new_contact_to_navigation_contacts);
+                                        R.id.nav_host_fragment).popBackStack();
                                 Toast.makeText(getContext(), "Contact added", Toast.LENGTH_SHORT).show();
                             });
                 }

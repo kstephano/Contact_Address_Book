@@ -236,8 +236,8 @@ public class EditContactFragment extends Fragment {
                                 loadingDialog.hide();
                                 // navigate back to the contacts fragment
                                 Navigation.findNavController(getActivity(),
-                                        R.id.nav_host_fragment).popBackStack();
-                                        // navigate(R.id.action_navigation_edit_contact_to_navigation_contacts);
+                                        R.id.nav_host_fragment).
+                                        navigate(R.id.action_navigation_edit_contact_to_navigation_contacts);
                                 Toast.makeText(getContext(),
                                         getResources().getString(R.string.toast_contact_updated),
                                         Toast.LENGTH_SHORT).show();
@@ -257,14 +257,16 @@ public class EditContactFragment extends Fragment {
                         // navigate back to the contacts fragment
                         loadingDialog.hide();
                         Navigation.findNavController(getActivity(),
-                                R.id.nav_host_fragment).popBackStack();
-                        // navigate(R.id.action_navigation_edit_contact_to_navigation_contacts);
+                                R.id.nav_host_fragment).
+                                navigate(R.id.action_navigation_edit_contact_to_navigation_contacts);
                         Toast.makeText(getContext(),
                                 getResources().getString(R.string.toast_contact_updated),
                                 Toast.LENGTH_SHORT).show();
                     });
         }
     }
+
+
 
     /**
      * Get the extension for an image given a Uri.
