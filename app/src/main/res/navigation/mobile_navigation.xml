@@ -15,15 +15,33 @@
         android:id="@+id/navigation_contacts"
         android:name="com.example.contactaddressbook.ui.contacts.ContactsFragment"
         android:label="@string/title_contacts"
-        tools:layout="@layout/fragment_contacts" />
+        tools:layout="@layout/fragment_contacts" >
+        <action
+            android:id="@+id/action_navigation_contacts_to_navigation_edit_contact"
+            app:destination="@id/navigation_edit_contact" />
+        <argument
+            android:name="contactID"
+            app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_new_contact"
         android:name="com.example.contactaddressbook.ui.newcontact.NewContactFragment"
         android:label="@string/title_new_contact"
-        tools:layout="@layout/new_contact_fragment" >
+        tools:layout="@layout/fragment_new_contact" >
         <action
             android:id="@+id/action_navigation_new_contact_to_navigation_contacts"
             app:destination="@id/navigation_contacts" />
     </fragment>
+
+    <fragment
+        android:id="@+id/navigation_edit_contact"
+        android:name="com.example.contactaddressbook.ui.editcontact.EditContactFragment"
+        android:label="@string/title_edit_contact"
+        tools:layout="@layout/fragment_new_contact" >
+        <action
+            android:id="@+id/action_navigation_edit_contact_to_navigation_contacts"
+            app:destination="@id/navigation_contacts" />
+    </fragment>
+
 </navigation>

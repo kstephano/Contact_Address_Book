@@ -2,7 +2,7 @@ package com.example.contactaddressbook.modelClasses;
 
 public class Contact implements Comparable<Contact> {
 
-    private int phone;
+    private String phone;
     private String firstName;
     private String lastName;
     private String dob;
@@ -13,7 +13,7 @@ public class Contact implements Comparable<Contact> {
     private String postcode;
     private String profileImageURL;
 
-    public Contact(int phone, String firstName, String lastName, String email, String dob,
+    public Contact(String phone, String firstName, String lastName, String email, String dob,
                    String streetLineOne, String streetLineTwo, String city, String postcode,
                    String profileImageURL) {
         this.phone = phone;
@@ -28,16 +28,18 @@ public class Contact implements Comparable<Contact> {
         this.profileImageURL = profileImageURL;
     }
 
+    public Contact() { }
+
     @Override
     public int compareTo(Contact otherContact) {
         return this.firstName.compareTo(otherContact.getFirstName());
     }
 
-    public int getPhone() {
+    public String getPhone() {
         return phone;
     }
 
-    public void setPhone(int phone) {
+    public void setPhone(String phone) {
         this.phone = phone;
     }
 

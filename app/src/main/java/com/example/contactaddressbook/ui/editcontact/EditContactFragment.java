@@ -1,4 +1,4 @@
-package com.example.contactaddressbook.ui.newcontact;
+package com.example.contactaddressbook.ui.editcontact;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +14,16 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+import com.example.contactaddressbook.R;
+import com.example.contactaddressbook.modelClasses.Contact;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -24,12 +32,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import com.example.contactaddressbook.R;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -37,81 +39,80 @@ import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class NewContactFragment extends Fragment {
 
-    //private NewContactViewModel newContactViewModel;
-    //private NewContactFragmentBinding binding;
+public class EditContactFragment extends Fragment {
 
-    private static int REQUEST_CODE = 1;
-    private String TAG = "NewContactViewModel";
-    private Uri profileImageURL;
+    // XML Views
+    View root;
+    Toolbar toolbar;
+    CircleImageView profileIV;
+    TextView addPictureTV;
+    EditText firstNameET;
+    EditText lastNameET;
+    EditText dobET;
+    EditText emailET;
+    EditText phoneET;
+    EditText streetLineOneET;
+    EditText streetLineTwoET;
+    EditText cityET;
+    EditText postcodeET;
+    Button updateBtn;
+
+    // Firebase
     private FirebaseFirestore firebaseFirestore;
     private StorageReference storageReference;
-    private Calendar calendar = Calendar.getInstance();
 
-    // xml variables
-    private View root;
-    private Toolbar toolbar;
-    private CircleImageView profileIV;
-    private EditText firstNameET;
-    private EditText lastNameET;
-    private EditText dobET;
-    private EditText emailET;
-    private EditText phoneET;
-    private EditText streetLineOneET;
-    private EditText streetLineTwoET;
-    private EditText cityET;
-    private EditText postcodeET;
-    private Button submitBtn;
+    private String TAG = "EditContactFragment";
+    private String contactID;
+    private Contact contact;
+    private Uri profileImageURL;
+    private Calendar calendar = Calendar.getInstance();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        /*
-        newContactViewModel =
-           new ViewModelProvider(this).get(NewContactViewModel.class);
-        View root = inflater.inflate(R.layout.new_contact_fragment, container, false);
 
-        binding = DataBindingUtil.inflate(inflater, R.layout.new_contact_fragment, container, false);
-        binding = NewContactFragmentBinding.inflate(inflater, container, false);
-        newContactViewModel = new ViewModelProvider(this).get(NewContactViewModel.class);
-        View root = binding.getRoot();
-        binding.setNewContactViewModel(newContactViewModel);
-
-
-        /*
-        final EditText firstNameET = root.findViewById(R.id.edit_text_first_name);
-        final EditText lastNameET = root.findViewById(R.id.edit_text_last_name);
-        final EditText phoneET = root.findViewById(R.id.edit_text_telephone);
-        final EditText emailET = root.findViewById(R.id.edit_text_email);
-        final EditText dobET = root.findViewById(R.id.edit_text_dob);
-        final EditText streetOneET = root.findViewById(R.id.edit_text_street_one);
-        final EditText streetTwoET = root.findViewById(R.id.edit_text_street_two);
-        final EditText cityET = root.findViewById(R.id.edit_text_city);
-        final EditText postcodeET = root.findViewById(R.id.edit_text_postcode);
-        */
-        /*
-        newContactViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
-         */
-        // initialise Firebase variables
-        firebaseFirestore = FirebaseFirestore.getInstance();
-        storageReference = FirebaseStorage.getInstance().getReference("ImageFolder");
-
-        root = inflater.inflate(R.layout.fragment_new_contact, container, false);
-        toolbar = root.findViewById(R.id.toolbar_new_contact);
-        toolbar.setTitle(getResources().getString(R.string.title_new_contact));
-
+        root = inflater.inflate(R.layout.fragment_edit_contact, container, false);
+        initialiseToolbar();
         initialiseViews();
+        firebaseFirestore = FirebaseFirestore.getInstance();
+        loadContactData();
+
         setOnClickListenerImageIV();
         setOnClickListenerDobPicker();
-        setOnClickListenerSubmitBtn();
+        setOnClickListenerUpdateBtn();
 
         return root;
     }
+
+    /**
+     * Load the contact's data into the UI.
+     */
+    public void loadContactData() {
+        DocumentReference documentReference = firebaseFirestore.collection("Contacts")
+                .document(contactID);
+
+        documentReference.get().addOnSuccessListener(documentSnapshot -> {
+            String profilePicURL = documentSnapshot.getString("profileImageURL");
+
+            // load picture if not null
+            if (profilePicURL != "null") {
+                Glide.with(getContext()).load(profilePicURL).into(profileIV);
+            }
+
+            firstNameET.setText(documentSnapshot.getString("firstName"));
+            lastNameET.setText(documentSnapshot.getString("lastName"));
+            dobET.setText(documentSnapshot.getString("dob"));
+            emailET.setText(documentSnapshot.getString("email"));
+            phoneET.setText(documentSnapshot.getString("phone"));
+            streetLineOneET.setText(documentSnapshot.getString("streetLineOne"));
+            streetLineTwoET.setText(documentSnapshot.getString("streetLineTwo"));
+            cityET.setText(documentSnapshot.getString("city"));
+            postcodeET.setText(documentSnapshot.getString("postcode"));
+        }).addOnFailureListener(e -> {
+            Log.d(TAG, "Failed to load contact: " + e.getMessage());
+        });
+    }
+
 
     /**
      * Checks if the current form is valid to create a new contact.
@@ -119,13 +120,45 @@ public class NewContactFragment extends Fragment {
      */
     private Boolean isFormValid() {
         if (
-            !firstNameET.getText().toString().isEmpty() &&
-            !lastNameET.getText().toString().isEmpty() &&
-                    (!phoneET.getText().toString().isEmpty() || !emailET.toString().isEmpty())
+                !firstNameET.getText().toString().isEmpty() &&
+                        !lastNameET.getText().toString().isEmpty() &&
+                        (!phoneET.getText().toString().isEmpty() || !emailET.toString().isEmpty())
         ) {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Initialise the toolbar and set the back button in the menu listener.
+     */
+    private void initialiseToolbar() {
+        toolbar = root.findViewById(R.id.toolbar_edit);
+        toolbar.inflateMenu(R.menu.edit_contact_menu);
+        toolbar.setTitle(getToolbarTitle());
+
+        // set the back button for the toolbar
+        toolbar.setOnMenuItemClickListener(item -> {
+            Navigation.findNavController(root).navigate(
+                    R.id.action_navigation_edit_contact_to_navigation_contacts);
+            return false;
+        });
+    }
+
+    /**
+     * Get the toolbar title and unpack bundle.
+     * @return Title of the toolbar, made up of the contact's first name
+     * and last name.
+     */
+    private String getToolbarTitle() {
+        String title;
+        String firstName = getArguments().getString("firstName");
+        String lastName = getArguments().getString("lastName");
+        String phone = getArguments().getString("phone");
+        contactID = firstName + lastName + phone;
+        title = firstName + " " + lastName;
+
+        return title;
     }
 
     /**
@@ -144,9 +177,9 @@ public class NewContactFragment extends Fragment {
             // upload image to Firestore
             UploadTask uploadTask = imageRef.putFile(localProfileImageURL);
             uploadTask.continueWithTask( task -> {
-               if (!task.isSuccessful()) {
-                   Log.i(TAG, "Couldn't upload image");
-               }
+                if (!task.isSuccessful()) {
+                    Log.i(TAG, "Couldn't upload image");
+                }
                 return imageRef.getDownloadUrl();
             }).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
@@ -205,10 +238,27 @@ public class NewContactFragment extends Fragment {
     }
 
     /**
+     * Get the extension for an image given a Uri.
+     * @param uri The Uri of an image.
+     * @return The file extension for the given Uri, or null.
+     */
+    private String getExtension(Uri uri) {
+        String extension = null;
+        try {
+            ContentResolver contentResolver = getContext().getContentResolver();
+            MimeTypeMap mime = MimeTypeMap.getSingleton();
+            extension = mime.getExtensionFromMimeType(contentResolver.getType(uri));
+        } catch (Exception e) {
+            Log.d(TAG, "Couldn't get extension");
+        }
+        return extension;
+    }
+
+    /**
      * Set the onClickListener for the submit button.
      */
-    private void setOnClickListenerSubmitBtn() {
-        submitBtn.setOnClickListener(v -> {
+    private void setOnClickListenerUpdateBtn() {
+        updateBtn.setOnClickListener(v -> {
             if (isFormValid() == true) {
                 upLoadToFirebase();
             } else {
@@ -282,27 +332,11 @@ public class NewContactFragment extends Fragment {
     }
 
     /**
-     * Get the extension for an image given a Uri.
-     * @param uri The Uri of an image.
-     * @return The file extension for the given Uri, or null.
-     */
-    private String getExtension(Uri uri) {
-        String extension = null;
-        try {
-            ContentResolver contentResolver = getContext().getContentResolver();
-            MimeTypeMap mime = MimeTypeMap.getSingleton();
-            extension = mime.getExtensionFromMimeType(contentResolver.getType(uri));
-        } catch (Exception e) {
-            Log.d(TAG, "Couldn't get extension");
-        }
-        return extension;
-    }
-
-    /**
      * Attach XML views to Java objects.
      */
     private void initialiseViews() {
         profileIV = root.findViewById(R.id.image_view_profile);
+        addPictureTV = root.findViewById(R.id.text_add_photo);
         firstNameET = root.findViewById(R.id.edit_text_first_name);
         lastNameET = root.findViewById(R.id.edit_text_last_name);
         dobET = root.findViewById(R.id.edit_text_dob);
@@ -312,6 +346,7 @@ public class NewContactFragment extends Fragment {
         streetLineTwoET = root.findViewById(R.id.edit_text_street_two);
         cityET = root.findViewById(R.id.edit_text_city);
         postcodeET = root.findViewById(R.id.edit_text_postcode);
-        submitBtn = root.findViewById(R.id.button_submit);
+        updateBtn = root.findViewById(R.id.button_submit);
     }
+
 }

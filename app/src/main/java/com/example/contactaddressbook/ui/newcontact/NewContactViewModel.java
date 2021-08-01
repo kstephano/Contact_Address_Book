@@ -84,4 +84,3 @@ public class NewContactViewModel extends ViewModel {
     public LiveData<String> getPostCode() { return postcode; }
     public LiveData<DatePickerDialog.OnDateSetListener> getDateSetListener() { return dateSetListener; }
 }
-

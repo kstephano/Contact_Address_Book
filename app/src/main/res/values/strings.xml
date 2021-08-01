@@ -2,10 +2,8 @@
     <string name="app_name">Contact Address Book</string>
     <!-- title strings -->
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
     <string name="title_contacts">Contacts</string>
-    <string name="title_new_contact">New contact</string>
+    <string name="title_new_contact">New Contact</string>
     <string name="title_phone">Phone</string>
 
 
@@ -23,4 +21,6 @@
     <!-- -->
     <string name="button_submit">Submit</string>
     <string name="text_add_photo">Add Photo</string>
+    <string name="title_edit_contact">Edit contact</string>
+    <string name="title_go_back">Go back</string>
 </resources>
