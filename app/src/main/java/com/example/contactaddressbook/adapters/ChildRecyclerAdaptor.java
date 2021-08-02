@@ -1,6 +1,10 @@
 package com.example.contactaddressbook.adapters;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +40,14 @@ public class ChildRecyclerAdaptor extends RecyclerView.Adapter<ChildRecyclerAdap
         String firstName = contacts.get(position).getFirstName();
         String lastName = contacts.get(position).getLastName();
         String name = firstName + " " + lastName;
-        holder.itemTextView.setText(name);
+        int boldCharStart = firstName.length() + 1;
+        int boldCharEnd = firstName.length() + 1 + lastName.length();
+
+        SpannableStringBuilder str = new SpannableStringBuilder(name);
+        str.setSpan(new android.text.style.StyleSpan(Typeface.BOLD), boldCharStart, boldCharEnd,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        holder.itemTextView.setText(str);
         Bundle bundle = new Bundle();
         bundle.putString("contactID", contacts.get(position).getContactID());
         bundle.putString("firstName", contacts.get(position).getFirstName());

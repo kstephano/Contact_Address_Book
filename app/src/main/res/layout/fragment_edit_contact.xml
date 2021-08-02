@@ -97,114 +97,170 @@
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"/>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edit_text_first_name"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/text_layout_first_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
                     android:hint="@string/hint_first_name"
-                    android:inputType="textCapSentences"
-                    android:maxLines="1"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/image_view_phone_call" />
+                    app:layout_constraintTop_toBottomOf="@id/image_view_phone_call">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edit_text_last_name"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edit_text_first_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:inputType="textCapSentences"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/text_layout_last_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:hint="@string/hint_last_name"
-                    android:inputType="textCapSentences"
-                    android:maxLines="1"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/edit_text_first_name" />
+                    app:layout_constraintTop_toBottomOf="@id/text_layout_first_name">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edit_text_telephone"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edit_text_last_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:inputType="textCapSentences"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/text_layout_telephone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:hint="@string/hint_phone_number"
-                    android:inputType="phone"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/edit_text_last_name" />
+                    app:layout_constraintTop_toBottomOf="@id/text_layout_last_name">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edit_text_email"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edit_text_telephone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:inputType="phone" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/text_layout_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:hint="@string/hint_email"
-                    android:inputType="textEmailAddress"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/edit_text_telephone" />
+                    app:layout_constraintTop_toBottomOf="@id/text_layout_telephone">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edit_text_dob"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edit_text_email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:inputType="textEmailAddress" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/text_layout_dob"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:drawableStart="@drawable/ic_calendar_item"
-                    android:drawablePadding="3dp"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false"
                     android:hint="@string/hint_dob"
-                    android:maxLines="1"
+                    android:gravity="center"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/edit_text_email" />
+                    app:layout_constraintTop_toBottomOf="@id/text_layout_email">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edit_text_street_one"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edit_text_dob"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:drawableStart="@drawable/ic_calendar_item"
+                        android:drawablePadding="3dp"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/text_layout_street_one"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:hint="@string/hint_street_line_1"
-                    android:inputType="textCapSentences"
-                    android:maxLines="1"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/edit_text_dob" />
+                    app:layout_constraintTop_toBottomOf="@id/text_layout_dob">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edit_text_street_two"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edit_text_street_one"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:inputType="textCapSentences"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/text_layout_street_two"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:hint="@string/hint_street_line_2"
-                    android:inputType="textCapSentences"
-                    android:maxLines="1"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/edit_text_street_one" />
+                    app:layout_constraintTop_toBottomOf="@id/text_layout_street_one">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edit_text_city"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edit_text_street_two"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:inputType="textCapSentences"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/text_layout_city"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:hint="@string/hint_city"
-                    android:inputType="text"
-                    android:maxLines="1"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/edit_text_street_two" />
+                    app:layout_constraintTop_toBottomOf="@id/text_layout_street_two">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edit_text_postcode"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edit_text_city"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:inputType="text"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/text_layout_postcode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:hint="@string/hint_postcode"
-                    android:inputType="textCapCharacters"
-                    android:maxLines="1"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/edit_text_city" />
+                    app:layout_constraintTop_toBottomOf="@id/text_layout_city">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edit_text_postcode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:inputType="textCapCharacters"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_submit"
@@ -214,7 +270,7 @@
                     android:text="@string/button_update"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/edit_text_postcode" />
+                    app:layout_constraintTop_toBottomOf="@id/text_layout_postcode" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_delete"

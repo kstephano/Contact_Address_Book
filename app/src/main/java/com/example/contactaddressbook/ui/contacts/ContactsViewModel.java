@@ -18,6 +18,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class ContactsViewModel extends ViewModel {
 
@@ -47,18 +49,21 @@ public class ContactsViewModel extends ViewModel {
             sectionsHash.put(sectionTitle, sectionContacts);
         }
 
+        // created a new sorted map out of the old one
+        Map<String, ArrayList<Contact>> sortedMap = new TreeMap<>(sectionsHash);
+
         // fill up arrays in hash map with users
         for (Contact contact : contacts) {
             String sectionTitle = contact.getLastName().substring(0, 1).toUpperCase();
-            ArrayList<Contact> sectionContacts =  sectionsHash.get(sectionTitle);
+            ArrayList<Contact> sectionContacts =  sortedMap.get(sectionTitle);
             sectionContacts.add(contact);
-            sectionsHash.put(sectionTitle, sectionContacts);
+            sortedMap.put(sectionTitle, sectionContacts);
         }
 
-        sectionsHash.forEach((k, v) -> Collections.sort(v));
+        sortedMap.forEach((k, v) -> Collections.sort(v));
 
         // update the sectionList
-        sectionsHash.forEach((k, v) -> sectionList.add(new ContactSection(k, v)));
+        sortedMap.forEach((k, v) -> sectionList.add(new ContactSection(k, v)));
     }
 
 
