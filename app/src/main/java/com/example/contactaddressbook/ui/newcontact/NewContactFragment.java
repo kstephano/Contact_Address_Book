@@ -41,15 +41,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class NewContactFragment extends Fragment {
 
-    //private NewContactViewModel newContactViewModel;
-    //private NewContactFragmentBinding binding;
-
-    private static int REQUEST_CODE = 1;
+    private static final int REQUEST_CODE = 1;
     private String TAG = "NewContactViewModel";
     private Uri profileImageURL;
     private FirebaseFirestore firebaseFirestore;
     private StorageReference storageReference;
-    private Calendar calendar = Calendar.getInstance();
+    private final Calendar calendar = Calendar.getInstance();
 
     // xml variables
     private View root;

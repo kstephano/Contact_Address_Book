@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@drawable/ic_phone_background" />
+    <item>
+        <inset android:drawable="@drawable/ic_baseline_phone_24"
+            android:gravity="center"
+            android:insetTop="5dp"
+            android:insetRight="15dp"
+            android:insetLeft="15dp"
+            android:insetBottom="5dp"/>
+    </item>
+
+</layer-list>

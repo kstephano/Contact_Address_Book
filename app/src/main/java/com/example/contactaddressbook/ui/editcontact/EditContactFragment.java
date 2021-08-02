@@ -1,10 +1,12 @@
 package com.example.contactaddressbook.ui.editcontact;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -18,6 +20,7 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,10 +32,13 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
@@ -47,10 +53,19 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class EditContactFragment extends Fragment {
 
-    // XML Views
+    private static final int REQUEST_CALL = 1;
+    private final String TAG = "EditContactFragment";
+    private String contactID;
+    private Uri profileImageURL;
+    private Boolean isImageUpdated = false;
+    private final Calendar calendar = Calendar.getInstance();
+    private FirebaseFirestore firebaseFirestore;
+    private StorageReference storageReference;
+
+    // xml variables
     private View root;
-    private Toolbar toolbar;
     private CircleImageView profileIV;
+    private ImageView callContactIV;
     private TextView addPictureTV;
     private TextView removePictureTV;
     private EditText firstNameET;
@@ -66,15 +81,6 @@ public class EditContactFragment extends Fragment {
     private Button deleteBtn;
     private Dialog loadingDialog;
 
-    // Firebase
-    private FirebaseFirestore firebaseFirestore;
-    private StorageReference storageReference;
-
-    private String TAG = "EditContactFragment";
-    private String contactID;
-    private Uri profileImageURL;
-    private Boolean isImageUpdated = false;
-    private Calendar calendar = Calendar.getInstance();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -98,6 +104,12 @@ public class EditContactFragment extends Fragment {
         setOnClickListenerDeleteBtn();
 
         return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadingDialog.hide();
     }
 
     /**
@@ -132,6 +144,8 @@ public class EditContactFragment extends Fragment {
                 addPictureTV.setText(getResources().getString(R.string.text_add_photo));
             }
 
+            // set the onClickListener for the call contact button
+            setOnClickListenerCallContact();
             loadingDialog.hide();
         }).addOnFailureListener(e -> Log.d(TAG, "Failed to load contact: " + e.getMessage()));
     }
@@ -166,7 +180,7 @@ public class EditContactFragment extends Fragment {
      * Initialise the toolbar and set the back button in the menu listener.
      */
     private void initialiseToolbar() {
-        toolbar = root.findViewById(R.id.toolbar_edit);
+        Toolbar toolbar = root.findViewById(R.id.toolbar_edit);
         toolbar.inflateMenu(R.menu.edit_contact_menu);
 
         // set the back button for the toolbar
@@ -407,10 +421,36 @@ public class EditContactFragment extends Fragment {
     }
 
     /**
+     * Set the onClickListener for the call contact image view.
+     */
+    private void setOnClickListenerCallContact() {
+        callContactIV.setOnClickListener(v -> {
+            String number = phoneET.getText().toString();
+            // check if phone number is valid
+            if (number.trim().length() > 0) {
+                // ask for permissions if not currently granted
+                if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CALL);
+                } else {
+                    // make the phone call
+                    Intent callIntent = new Intent(Intent.ACTION_CALL);
+                    callIntent.setData(Uri.parse("tel:" + number));
+                    startActivity(callIntent);
+                }
+            } else {
+                Toast.makeText(getContext(), "Enter a phone number", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+    /**
      * Attach XML views to Java objects.
      */
     private void initialiseViews() {
         profileIV = root.findViewById(R.id.image_view_profile);
+        callContactIV = root.findViewById(R.id.image_view_phone_call);
+        TextView toolbarTitleTV = root.findViewById(R.id.toolbar_title);
         addPictureTV = root.findViewById(R.id.text_add_photo);
         removePictureTV = root.findViewById(R.id.text_remove_photo);
         firstNameET = root.findViewById(R.id.edit_text_first_name);
@@ -424,6 +464,8 @@ public class EditContactFragment extends Fragment {
         postcodeET = root.findViewById(R.id.edit_text_postcode);
         updateBtn = root.findViewById(R.id.button_submit);
         deleteBtn = root.findViewById(R.id.button_delete);
+
+        toolbarTitleTV.setText(getToolbarTitle());
     }
 
 }
