@@ -6,12 +6,6 @@
     app:startDestination="@+id/navigation_contacts">
 
     <fragment
-        android:id="@+id/navigation_phone"
-        android:name="com.example.contactaddressbook.ui.phone.PhoneFragment"
-        android:label="@string/title_phone"
-        tools:layout="@layout/fragment_phone" />
-
-    <fragment
         android:id="@+id/navigation_contacts"
         android:name="com.example.contactaddressbook.ui.contacts.ContactsFragment"
         android:label="@string/title_contacts"
