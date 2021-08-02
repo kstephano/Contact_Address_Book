@@ -3,7 +3,6 @@ package com.example.contactaddressbook.adapters;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,9 +39,10 @@ public class ChildRecyclerAdaptor extends RecyclerView.Adapter<ChildRecyclerAdap
         String firstName = contacts.get(position).getFirstName();
         String lastName = contacts.get(position).getLastName();
         String name = firstName + " " + lastName;
+        // boundaries for characters to be made bold
         int boldCharStart = firstName.length() + 1;
         int boldCharEnd = firstName.length() + 1 + lastName.length();
-
+        // create a new spannable string with the last name of the contact made bold
         SpannableStringBuilder str = new SpannableStringBuilder(name);
         str.setSpan(new android.text.style.StyleSpan(Typeface.BOLD), boldCharStart, boldCharEnd,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -62,13 +62,12 @@ public class ChildRecyclerAdaptor extends RecyclerView.Adapter<ChildRecyclerAdap
         return contacts.size();
     }
 
-    class viewHolder extends RecyclerView.ViewHolder {
+    static class viewHolder extends RecyclerView.ViewHolder {
 
         TextView itemTextView;
 
         public viewHolder(@NonNull View itemView) {
             super(itemView);
-
             itemTextView = itemView.findViewById(R.id.itemTextView);
         }
     }

@@ -62,7 +62,7 @@ public class ContactsRecyclerAdaptor extends RecyclerView.Adapter<ContactsRecycl
         return sectionList.size() + 1;
     }
 
-    class viewHolder extends ViewHolder {
+    static class viewHolder extends ViewHolder {
 
         TextView sectionNameTextView;
         RecyclerView childRecyclerView;

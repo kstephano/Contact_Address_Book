@@ -32,7 +32,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -41,7 +40,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -119,12 +117,13 @@ public class EditContactFragment extends Fragment {
         loadingDialog.show();
         loadingDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
+        // initialise the contact document reference
         DocumentReference documentReference = firebaseFirestore.collection("Contacts")
                 .document(contactID);
-
+        // get the contact documentSnapshot from Firebase
         documentReference.get().addOnSuccessListener(documentSnapshot -> {
+            // load user data into views or variable
             String profilePicURL = documentSnapshot.getString("profileImageURL");
-
             firstNameET.setText(documentSnapshot.getString("firstName"));
             lastNameET.setText(documentSnapshot.getString("lastName"));
             dobET.setText(documentSnapshot.getString("dob"));
@@ -222,7 +221,7 @@ public class EditContactFragment extends Fragment {
         contactData.put("city", cityET.getText().toString());
         contactData.put("postcode", postcodeET.getText().toString());
 
-        // upload image updated
+        // upload image if URL is not nut
         if (profileImageURL != null) {
             String imageName = lastNameET.getText().toString() +
                     phoneET.getText().toString() + "." + getExtension(localProfileImageURL);
@@ -261,7 +260,7 @@ public class EditContactFragment extends Fragment {
                 // remove the image URL from the database.
                 contactData.put("profileImageURL", "null");
             }
-
+            // update user
             firebaseFirestore.collection("Contacts")
                     .document(contactID)
                     .update(contactData)
@@ -302,6 +301,7 @@ public class EditContactFragment extends Fragment {
      */
     private void setOnClickListenerUpdateBtn() {
         updateBtn.setOnClickListener(v -> {
+            // check if form is valid and upload data to Firebase.
             if (isFormValid()) {
                 upLoadToFirebase();
             } else {
@@ -336,8 +336,10 @@ public class EditContactFragment extends Fragment {
         ActivityResultLauncher<Intent> imageGalleryResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
+                    // check if result code is valid
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         Intent data = result.getData();
+                        // check if data is null and set the photo
                         if (data.getData() != null) {
                             profileImageURL = data.getData();
                             profileIV.setImageURI(profileImageURL);
@@ -379,6 +381,9 @@ public class EditContactFragment extends Fragment {
         });
     }
 
+    /**
+     * Set the onClickListener for the remove photo Text View.
+     */
     private void setOnClickListenerRemovePhoto() {
         removePictureTV.setOnClickListener(v -> {
             int image = R.drawable.ic_baseline_account_circle_24;

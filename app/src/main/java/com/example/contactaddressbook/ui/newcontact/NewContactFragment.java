@@ -22,7 +22,6 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -42,7 +41,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class NewContactFragment extends Fragment {
 
     private static final int REQUEST_CODE = 1;
-    private String TAG = "NewContactViewModel";
+    private final String TAG = "NewContactViewModel";
     private Uri profileImageURL;
     private FirebaseFirestore firebaseFirestore;
     private StorageReference storageReference;
