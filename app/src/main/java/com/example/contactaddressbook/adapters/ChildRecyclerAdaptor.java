@@ -30,7 +30,7 @@ public class ChildRecyclerAdaptor extends RecyclerView.Adapter<ChildRecyclerAdap
     @Override
     public viewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View view = layoutInflater.inflate(R.layout.user_row, parent, false);
+        View view = layoutInflater.inflate(R.layout.contact_row, parent, false);
         return new viewHolder(view);
     }
 
@@ -47,14 +47,18 @@ public class ChildRecyclerAdaptor extends RecyclerView.Adapter<ChildRecyclerAdap
         str.setSpan(new android.text.style.StyleSpan(Typeface.BOLD), boldCharStart, boldCharEnd,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        holder.itemTextView.setText(str);
+        holder.contactTV.setText(str);
         Bundle bundle = new Bundle();
         bundle.putString("contactID", contacts.get(position).getContactID());
         bundle.putString("firstName", contacts.get(position).getFirstName());
         bundle.putString("lastName", contacts.get(position).getLastName());
 
-        holder.itemTextView.setOnClickListener(v -> Navigation.findNavController(v).navigate(
+        holder.contactTV.setOnClickListener(v -> Navigation.findNavController(v).navigate(
                     R.id.action_navigation_contacts_to_navigation_edit_contact, bundle));
+
+        if (position == contacts.size() - 1) {
+            holder.contactDivider.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -64,11 +68,13 @@ public class ChildRecyclerAdaptor extends RecyclerView.Adapter<ChildRecyclerAdap
 
     static class viewHolder extends RecyclerView.ViewHolder {
 
-        TextView itemTextView;
+        TextView contactTV;
+        View contactDivider;
 
         public viewHolder(@NonNull View itemView) {
             super(itemView);
-            itemTextView = itemView.findViewById(R.id.itemTextView);
+            contactTV = itemView.findViewById(R.id.text_view_user);
+            contactDivider = itemView.findViewById(R.id.divider_contact);
         }
     }
 }
