@@ -35,7 +35,9 @@ public class Contact implements Comparable<Contact> {
 
     @Override
     public int compareTo(Contact otherContact) {
-        return this.lastName.toLowerCase().compareTo(otherContact.getLastName().toLowerCase());
+        String fullName = this.lastName.toLowerCase() + this.firstName.toLowerCase();
+        String fullNameOther = otherContact.getLastName() + otherContact.getFirstName();
+        return fullName.compareTo(fullNameOther);
     }
 
     public String getContactID() { return contactID; }
