@@ -41,7 +41,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class NewContactFragment extends Fragment {
 
-    private static final int REQUEST_CODE = 1;
     private final String TAG = "NewContactViewModel";
     private Uri profileImageURL;
     private FirebaseFirestore firebaseFirestore;
@@ -123,8 +122,7 @@ public class NewContactFragment extends Fragment {
 
         // upload image if not null
         if (localProfileImageURL != null) {
-            String imageName = lastNameET.getText().toString() +
-                    phoneET.getText().toString() + "." + getExtension(localProfileImageURL);
+            String imageName = contactID + "." + getExtension(localProfileImageURL);
             StorageReference imageRef = storageReference.child(imageName);
 
             // upload image to Firestore

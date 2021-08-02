@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.contactaddressbook.R;
+import com.google.api.LogDescriptor;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -59,6 +60,7 @@ public class EditContactFragment extends Fragment {
     private final Calendar calendar = Calendar.getInstance();
     private FirebaseFirestore firebaseFirestore;
     private StorageReference storageReference;
+    private StorageReference profileImageRef = null;
 
     // xml variables
     private View root;
@@ -123,7 +125,7 @@ public class EditContactFragment extends Fragment {
         // get the contact documentSnapshot from Firebase
         documentReference.get().addOnSuccessListener(documentSnapshot -> {
             // load user data into views or variable
-            String profilePicURL = documentSnapshot.getString("profileImageURL");
+            String profileImageURL = documentSnapshot.getString("profileImageURL");
             firstNameET.setText(documentSnapshot.getString("firstName"));
             lastNameET.setText(documentSnapshot.getString("lastName"));
             dobET.setText(documentSnapshot.getString("dob"));
@@ -135,10 +137,10 @@ public class EditContactFragment extends Fragment {
             postcodeET.setText(documentSnapshot.getString("postcode"));
 
             // load picture if not URL is not empty
-            if (!profilePicURL.equals("null")) {
-                Glide.with(getContext()).load(profilePicURL).into(profileIV);
+            if (!profileImageURL.equals("null")) {
+                Glide.with(getContext()).load(profileImageURL).into(profileIV);
                 removePictureTV.setText(getResources().getString(R.string.text_remove_photo));
-
+                profileImageRef = FirebaseStorage.getInstance().getReferenceFromUrl(profileImageURL);
             } else {
                 addPictureTV.setText(getResources().getString(R.string.text_add_photo));
             }
@@ -223,10 +225,9 @@ public class EditContactFragment extends Fragment {
         contactData.put("city", cityET.getText().toString());
         contactData.put("postcode", postcodeET.getText().toString());
 
-        // upload image if URL is not nut
+        // upload image if URL is not null
         if (profileImageURL != null) {
-            String imageName = lastNameET.getText().toString() +
-                    phoneET.getText().toString() + "." + getExtension(localProfileImageURL);
+            String imageName = contactID + "." + getExtension(localProfileImageURL);
             StorageReference imageRef = storageReference.child(imageName);
 
             // upload image to Firestore
@@ -238,8 +239,8 @@ public class EditContactFragment extends Fragment {
                 return imageRef.getDownloadUrl();
             }).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    // upload contact to Firestore
 
+                    // upload contact to Firestore
                     contactData.put("profileImageURL", task.getResult().toString());
 
                     firebaseFirestore.collection("Contacts")
@@ -261,6 +262,7 @@ public class EditContactFragment extends Fragment {
             if (isImageUpdated) {
                 // remove the image URL from the database.
                 contactData.put("profileImageURL", "null");
+                deleteOldPictureFromStorage();
             }
             // update user
             firebaseFirestore.collection("Contacts")
@@ -279,6 +281,18 @@ public class EditContactFragment extends Fragment {
         }
     }
 
+    /**
+     * Delete the old contact image from Firebase Storage.
+     *
+     */
+    private void deleteOldPictureFromStorage() {
+        if (profileImageRef != null) {
+            profileImageRef.delete().addOnSuccessListener(aVoid ->
+                    Log.d(TAG, "Old contact image removed successfully"))
+                    .addOnFailureListener(e ->
+                Log.d(TAG, "Old contact image could not be removed"));
+        }
+    }
 
 
     /**
