@@ -84,7 +84,7 @@ public class EditContactFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
 
         root = inflater.inflate(R.layout.fragment_edit_contact, container, false);
-        // show the loading dialog
+        // initialise the loading dialog
         loadingDialog = new Dialog(getContext());
         loadingDialog.setContentView(R.layout.loading_dialog);
 
@@ -208,6 +208,8 @@ public class EditContactFragment extends Fragment {
      */
     private void upLoadToFirebase() {
         loadingDialog.show();
+        loadingDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
         Uri localProfileImageURL = profileImageURL;
 
         HashMap<String, Object> contactData = new HashMap<>();

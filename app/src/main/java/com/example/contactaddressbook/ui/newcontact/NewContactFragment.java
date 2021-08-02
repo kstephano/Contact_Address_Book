@@ -2,6 +2,7 @@ package com.example.contactaddressbook.ui.newcontact;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
@@ -60,15 +61,20 @@ public class NewContactFragment extends Fragment {
     private EditText cityET;
     private EditText postcodeET;
     private Button submitBtn;
+    private Dialog loadingDialog;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+
+        root = inflater.inflate(R.layout.fragment_new_contact, container, false);
 
         // initialise Firebase variables
         firebaseFirestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference("ImageFolder");
 
-        root = inflater.inflate(R.layout.fragment_new_contact, container, false);
+        // initialise the loading dialog
+        loadingDialog = new Dialog(getContext());
+        loadingDialog.setContentView(R.layout.loading_dialog);
 
         initialiseViews();
         setOnClickListenerImageIV();
@@ -111,6 +117,9 @@ public class NewContactFragment extends Fragment {
         HashMap<String, Object> contactData = new HashMap<>();
         String contactID = firstNameET.getText().toString() + lastNameET.getText().toString() +
                 phoneET.getText().toString();
+        // show the loading dialog
+        loadingDialog.show();
+        loadingDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
         // upload image if not null
         if (localProfileImageURL != null) {
@@ -145,6 +154,7 @@ public class NewContactFragment extends Fragment {
                             .document(contactID)
                             .set(contactData)
                             .addOnSuccessListener(aVoid -> {
+                                loadingDialog.hide();
                                 // navigate back to the contacts fragment
                                 Navigation.findNavController(getActivity(),
                                         R.id.nav_host_fragment).
@@ -171,11 +181,15 @@ public class NewContactFragment extends Fragment {
                     .document(contactID)
                     .set(contactData)
                     .addOnSuccessListener(aVoid -> {
+                        loadingDialog.hide();
                         // navigate back to the contacts fragment
                         Navigation.findNavController(root).navigate(
                                 R.id.action_navigation_new_contact_to_navigation_contacts);
                         Toast.makeText(getContext(), "Contact added", Toast.LENGTH_SHORT).show();
-                    });
+                    }).addOnFailureListener(e -> {
+                        loadingDialog.hide();
+                        Log.d(TAG, "Couldn't upload contact: " + e.getMessage());
+            });
         }
 
     }
