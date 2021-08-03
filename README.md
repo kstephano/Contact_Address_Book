@@ -8,7 +8,7 @@ Contacts are displayed in alphabetical order and in sections using a grouped Rec
 taking the user to a new page where they can call the contact, edit details, or delete the contact. Upon updating/deleting the contact, the appropiate actions 
 are executed to update the Firestore database, and the user is taken back to the Contacts fragment.
 
-![contact address book 1](https://imgur.com/KRvvSK3.png)
+![contact address book 1](https://imgur.com/rNNvihh.png)
 New contacts are created from the NewContactFragment. Images can be added and uploaded to Firestore Storage. Form validation is present to make sure
 user has entered a first name and last name AND phone is not empty and valid OR email is not empty and valid.
 
