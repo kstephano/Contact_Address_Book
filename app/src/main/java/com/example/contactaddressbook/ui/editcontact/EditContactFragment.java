@@ -54,7 +54,7 @@ public class EditContactFragment extends Fragment {
 
     private static final int REQUEST_CALL = 1;
     private final String TAG = "EditContactFragment";
-    private String contactID;
+    private String contactID = "";
     private Uri profileImageURL;
     private Boolean isImageUpdated = false;
     private final Calendar calendar = Calendar.getInstance();
@@ -90,7 +90,8 @@ public class EditContactFragment extends Fragment {
         loadingDialog = new Dialog(getContext());
         loadingDialog.setContentView(R.layout.loading_dialog);
 
-        contactID = getArguments().getString("contactID");
+        if (getArguments() != null) contactID = getArguments().getString("contactID");
+
         initialiseToolbar();
         initialiseViews();
         firebaseFirestore = FirebaseFirestore.getInstance();
@@ -136,14 +137,19 @@ public class EditContactFragment extends Fragment {
             cityET.setText(documentSnapshot.getString("city"));
             postcodeET.setText(documentSnapshot.getString("postcode"));
 
-            // load picture if not URL is not empty
-            if (!profileImageURL.equals("null")) {
-                Glide.with(getContext()).load(profileImageURL).into(profileIV);
-                removePictureTV.setText(getResources().getString(R.string.text_remove_photo));
-                profileImageRef = FirebaseStorage.getInstance().getReferenceFromUrl(profileImageURL);
+            if (profileImageURL != null && getContext() != null) {
+                // load picture if not URL is not empty
+                if (!profileImageURL.equals("null")) {
+                    Glide.with(getContext()).load(profileImageURL).into(profileIV);
+                    removePictureTV.setText(getResources().getString(R.string.text_remove_photo));
+                    profileImageRef = FirebaseStorage.getInstance().getReferenceFromUrl(profileImageURL);
+                } else {
+                    addPictureTV.setText(getResources().getString(R.string.text_add_photo));
+                }
             } else {
-                addPictureTV.setText(getResources().getString(R.string.text_add_photo));
+                Log.d(TAG, "Issue retrieving profileImageURL: ");
             }
+
 
             // set the onClickListener for the call contact button
             setOnClickListenerCallContact();
@@ -198,10 +204,13 @@ public class EditContactFragment extends Fragment {
      * and last name.
      */
     private String getToolbarTitle() {
-        String title;
-        String firstName = getArguments().getString("firstName");
-        String lastName = getArguments().getString("lastName");
-        title = firstName + " " + lastName;
+        String title = "";
+        if (getArguments() != null) {
+            String firstName = getArguments().getString("firstName");
+            String lastName = getArguments().getString("lastName");
+            title = firstName + " " + lastName;
+        }
+
         return title;
     }
 
@@ -307,7 +316,7 @@ public class EditContactFragment extends Fragment {
             MimeTypeMap mime = MimeTypeMap.getSingleton();
             extension = mime.getExtensionFromMimeType(contentResolver.getType(uri));
         } catch (Exception e) {
-            Log.d(TAG, "Couldn't get extension");
+            Log.d(TAG, "Couldn't get extension: " + e.getMessage());
         }
         return extension;
     }
@@ -447,20 +456,24 @@ public class EditContactFragment extends Fragment {
      */
     private void setOnClickListenerCallContact() {
         callContactIV.setOnClickListener(v -> {
-            String number = phoneET.getText().toString();
-            // check if phone number is valid
-            if (number.trim().length() > 0) {
-                // ask for permissions if not currently granted
-                if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CALL);
+            try {
+                String number = phoneET.getText().toString();
+                // check if phone number is valid
+                if (number.trim().length() > 0) {
+                    // ask for permissions if not currently granted
+                    if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CALL);
+                    } else {
+                        // make the phone call
+                        Intent callIntent = new Intent(Intent.ACTION_CALL);
+                        callIntent.setData(Uri.parse("tel:" + number));
+                        startActivity(callIntent);
+                    }
                 } else {
-                    // make the phone call
-                    Intent callIntent = new Intent(Intent.ACTION_CALL);
-                    callIntent.setData(Uri.parse("tel:" + number));
-                    startActivity(callIntent);
+                    Toast.makeText(getContext(), "Enter a phone number", Toast.LENGTH_SHORT).show();
                 }
-            } else {
-                Toast.makeText(getContext(), "Enter a phone number", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Log.d(TAG, "Issue calling contact: " + e.getMessage());
             }
         });
     }
