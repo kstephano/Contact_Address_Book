@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:text="@string/title_edit_contact"
-            android:textSize="20sp" />
+            android:textSize="22sp" />
     </androidx.appcompat.widget.Toolbar>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:text="@string/title_contacts"
-            android:textSize="20sp" />
+            android:textSize="22sp" />
 
     </androidx.appcompat.widget.Toolbar>
 
