@@ -46,16 +46,16 @@ public class ChildRecyclerAdaptor extends RecyclerView.Adapter<ChildRecyclerAdap
         SpannableStringBuilder str = new SpannableStringBuilder(name);
         str.setSpan(new android.text.style.StyleSpan(Typeface.BOLD), boldCharStart, boldCharEnd,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
+        // set the text for the Text View.
         holder.contactTV.setText(str);
         Bundle bundle = new Bundle();
         bundle.putString("contactID", contacts.get(position).getContactID());
         bundle.putString("firstName", contacts.get(position).getFirstName());
         bundle.putString("lastName", contacts.get(position).getLastName());
-
+        // navigate to the edit contact fragment
         holder.contactTV.setOnClickListener(v -> Navigation.findNavController(v).navigate(
                     R.id.action_navigation_contacts_to_navigation_edit_contact, bundle));
-
+        // hide the contact divider if it is the last contact in the section
         if (position == contacts.size() - 1) {
             holder.contactDivider.setVisibility(View.GONE);
         }

@@ -29,10 +29,11 @@ public class ContactsRecyclerAdaptor extends RecyclerView.Adapter<ContactsRecycl
     public viewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView;
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-
+        // inflate the section row
         if (viewType == R.layout.section_row) {
             itemView = layoutInflater.inflate(R.layout.section_row, parent, false);
         } else {
+            // inflate the footer if all sections have been displayed
             itemView = layoutInflater.inflate(R.layout.recycler_footer, parent, false);
         }
         return new viewHolder(itemView);
@@ -40,18 +41,18 @@ public class ContactsRecyclerAdaptor extends RecyclerView.Adapter<ContactsRecycl
 
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
-
+        // if view is last in the list, set the footer variables
         if (position == sectionList.size()) {
             String footerText = noOfContacts + " Contacts";
             holder.footerTextView.setText(footerText);
         } else {
+            // set the variables for the section title and its contents
             ContactSection section = sectionList.get(position);
             String sectionName = section.getSectionName();
             ArrayList<Contact> items = section.getSectionItems();
             noOfContacts += items.size();
-
             holder.sectionNameTextView.setText(sectionName);
-
+            // create and initialise the child recycler view of contacts for the section
             ChildRecyclerAdaptor childRecyclerAdaptor = new ChildRecyclerAdaptor(items);
             holder.childRecyclerView.setAdapter(childRecyclerAdaptor);
         }
@@ -79,6 +80,7 @@ public class ContactsRecyclerAdaptor extends RecyclerView.Adapter<ContactsRecycl
     @Override
     public int getItemViewType(int position) {
         super.getItemViewType(position);
+        // return section row layout or the recycler footer depending on given position
         return (position == sectionList.size() ? R.layout.recycler_footer : R.layout.section_row);
     }
 }
