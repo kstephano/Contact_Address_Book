@@ -18,7 +18,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:titleTextColor="@color/black"
         android:background="@color/white"
-        app:contentInsetStart="40dp">
+        app:contentInsetStart="45dp"
+        android:layoutDirection="rtl">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/toolbar_title"
