@@ -78,6 +78,17 @@
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/image_view_profile" />
 
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/text_remove_photo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="@color/blue_300"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/text_add_photo"
+                    app:layout_constraintTop_toBottomOf="@id/image_view_profile"/>
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/text_layout_first_name"
                     android:layout_width="match_parent"

@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -50,6 +51,8 @@ public class NewContactFragment extends Fragment {
     // xml variables
     private View root;
     private CircleImageView profileIV;
+    private TextView addPhotoTV;
+    private TextView removePhotoTV;
     private EditText firstNameET;
     private EditText lastNameET;
     private EditText dobET;
@@ -79,8 +82,19 @@ public class NewContactFragment extends Fragment {
         setOnClickListenerImageIV();
         setOnClickListenerDobPicker();
         setOnClickListenerSubmitBtn();
+        setOnClickListenerRemovePhoto();
 
         return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // check if user has selected an image and display appropriate Text View.
+        if (profileImageURL != null) {
+            removePhotoTV.setText(R.string.text_remove_photo);
+            addPhotoTV.setText("");
+        }
     }
 
     /**
@@ -227,7 +241,7 @@ public class NewContactFragment extends Fragment {
                 }
         );
 
-        // set the onClick for the image view
+        // set the onClickListener for the Image View
         profileIV.setOnClickListener(v -> {
             try {
                 Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -236,6 +250,30 @@ public class NewContactFragment extends Fragment {
             } catch (Exception e) {
                 Log.d(TAG, "Couldn't open image gallery: " + e.getMessage());
             }
+        });
+
+        // set the onClickListener for the add photo Text View
+        addPhotoTV.setOnClickListener(v -> {
+            try {
+                Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                galleryIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+                imageGalleryResultLauncher.launch(galleryIntent);
+            } catch (Exception e) {
+                Log.d(TAG, "Couldn't open image gallery: " + e.getMessage());
+            }
+        });
+    }
+
+    /**
+     * Set the onClickListener for the remove photo Text View.
+     */
+    private void setOnClickListenerRemovePhoto() {
+        removePhotoTV.setOnClickListener(v -> {
+            int image = R.drawable.ic_baseline_account_circle_24;
+            profileIV.setImageResource(image);
+            profileImageURL = null;
+            removePhotoTV.setText("");
+            addPhotoTV.setText(getResources().getString(R.string.text_add_photo));
         });
     }
 
@@ -291,6 +329,8 @@ public class NewContactFragment extends Fragment {
      */
     private void initialiseViews() {
         profileIV = root.findViewById(R.id.image_view_profile);
+        addPhotoTV = root.findViewById(R.id.text_add_photo);
+        removePhotoTV = root.findViewById(R.id.text_remove_photo);
         firstNameET = root.findViewById(R.id.edit_text_first_name);
         lastNameET = root.findViewById(R.id.edit_text_last_name);
         dobET = root.findViewById(R.id.edit_text_dob);
