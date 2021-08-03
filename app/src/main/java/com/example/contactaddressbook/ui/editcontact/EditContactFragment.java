@@ -461,8 +461,10 @@ public class EditContactFragment extends Fragment {
                 // check if phone number is valid
                 if (number.trim().length() > 0) {
                     // ask for permissions if not currently granted
-                    if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CALL);
+                    if (ContextCompat.checkSelfPermission(getActivity(),
+                            Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(getActivity(),
+                                new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CALL);
                     } else {
                         // make the phone call
                         Intent callIntent = new Intent(Intent.ACTION_CALL);
@@ -470,7 +472,8 @@ public class EditContactFragment extends Fragment {
                         startActivity(callIntent);
                     }
                 } else {
-                    Toast.makeText(getContext(), "Enter a phone number", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(),
+                            "Enter a phone number", Toast.LENGTH_SHORT).show();
                 }
             } catch (Exception e) {
                 Log.d(TAG, "Issue calling contact: " + e.getMessage());
