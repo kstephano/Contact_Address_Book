@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -303,6 +304,8 @@ public class NewContactFragment extends Fragment {
                     calendar.get(Calendar.MONTH),
                     calendar.get(Calendar.DAY_OF_MONTH)
             );
+            datePickerDialog.setButton(DatePickerDialog.BUTTON_NEUTRAL, "Clear",
+                    (dialog, which) -> dobET.setText(""));
             datePickerDialog.show();
         });
     }
