@@ -334,6 +334,7 @@ public class EditContactFragment extends Fragment {
         deleteBtn.setOnClickListener(v -> firebaseFirestore.collection("Contacts")
                 .document(contactID)
                 .delete().addOnSuccessListener(aVoid -> {
+                    deleteOldPictureFromStorage();
             // navigate back to the contacts fragment
             Navigation.findNavController(root).navigate(
                     R.id.action_navigation_edit_contact_to_navigation_contacts);
