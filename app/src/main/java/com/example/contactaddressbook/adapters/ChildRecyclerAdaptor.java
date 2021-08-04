@@ -14,13 +14,13 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.contactaddressbook.R;
-import com.example.contactaddressbook.modelClasses.Contact;
+import com.example.contactaddressbook.model.Contact;
 
 import java.util.ArrayList;
 
 public class ChildRecyclerAdaptor extends RecyclerView.Adapter<ChildRecyclerAdaptor.viewHolder> {
 
-    ArrayList<Contact> contacts;
+    private final ArrayList<Contact> contacts;
 
     public ChildRecyclerAdaptor(ArrayList<Contact> contacts) {
         this.contacts = contacts;

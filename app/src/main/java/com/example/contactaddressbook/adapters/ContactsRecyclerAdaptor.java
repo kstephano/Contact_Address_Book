@@ -10,15 +10,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import com.example.contactaddressbook.R;
-import com.example.contactaddressbook.modelClasses.ContactSection;
-import com.example.contactaddressbook.modelClasses.Contact;
+import com.example.contactaddressbook.model.ContactSection;
+import com.example.contactaddressbook.model.Contact;
 
 import java.util.ArrayList;
 
 public class ContactsRecyclerAdaptor extends RecyclerView.Adapter<ContactsRecyclerAdaptor.viewHolder> {
 
-    ArrayList<ContactSection> sectionList;
-    int noOfContacts;
+    private final ArrayList<ContactSection> sectionList;
+    private int noOfContacts;
 
     public ContactsRecyclerAdaptor(ArrayList<ContactSection> sectionList) {
         this.sectionList = sectionList;
