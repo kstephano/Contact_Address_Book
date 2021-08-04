@@ -6,8 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -16,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.contactaddressbook.R;
 import com.example.contactaddressbook.adapters.ContactsRecyclerAdaptor;
-import com.example.contactaddressbook.modelClasses.ContactSection;
+import com.example.contactaddressbook.model.ContactSection;
 
 import java.util.ArrayList;
 
@@ -33,16 +31,14 @@ public class ContactsFragment extends Fragment {
         root = inflater.inflate(R.layout.fragment_contacts, container, false);
 
         contactsViewModel.getUserSections().observe(getViewLifecycleOwner(),
-                new Observer<ArrayList<ContactSection>>() {
-            @Override
-            public void onChanged(ArrayList<ContactSection> contactSections) {
-                final RecyclerView mainRecyclerView = root.findViewById(R.id.recycler_contacts);
-                ContactsRecyclerAdaptor contactsRecyclerAdaptor = new ContactsRecyclerAdaptor(
-                        contactSections);
-                mainRecyclerView.setAdapter(contactsRecyclerAdaptor);
-                mainRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-            }
-        });
+                contactSections -> {
+                    final RecyclerView mainRecyclerView = root.findViewById(R.id.recycler_contacts);
+                    ContactsRecyclerAdaptor contactsRecyclerAdaptor = new ContactsRecyclerAdaptor(
+                            contactSections);
+                    mainRecyclerView.setAdapter(contactsRecyclerAdaptor);
+                    mainRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
+                            DividerItemDecoration.VERTICAL));
+                });
 
         return root;
     }

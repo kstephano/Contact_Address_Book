@@ -1,4 +1,4 @@
-package com.example.contactaddressbook.modelClasses;
+package com.example.contactaddressbook.model;
 
 public class Contact implements Comparable<Contact> {
 

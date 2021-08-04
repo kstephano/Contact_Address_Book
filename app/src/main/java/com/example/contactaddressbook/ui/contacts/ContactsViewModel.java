@@ -2,18 +2,14 @@ package com.example.contactaddressbook.ui.contacts;
 
 import android.util.Log;
 
-import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.contactaddressbook.modelClasses.Contact;
-import com.example.contactaddressbook.modelClasses.ContactSection;
+import com.example.contactaddressbook.model.Contact;
+import com.example.contactaddressbook.model.ContactSection;
 import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;

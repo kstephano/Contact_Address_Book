@@ -1,4 +1,4 @@
-package com.example.contactaddressbook.modelClasses;
+package com.example.contactaddressbook.model;
 
 import org.jetbrains.annotations.NotNull;
 
