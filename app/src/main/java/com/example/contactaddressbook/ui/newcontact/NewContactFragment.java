@@ -58,6 +58,7 @@ public class NewContactFragment extends Fragment {
         // initialise the loading dialog
         loadingDialog = new Dialog(getContext());
         loadingDialog.setContentView(R.layout.dialog_loading);
+        loadingDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         // initialise view model and binding
         newContactViewModel =
                 new ViewModelProvider(this).get(NewContactViewModel.class);
@@ -68,6 +69,7 @@ public class NewContactFragment extends Fragment {
 
         setDialogEventListener();
         setNavigateEventListener();
+        setLoadingDialogListener();
         setOnClickListenerImageIV();
         setOnClickListenerRemovePhoto();
 
@@ -120,6 +122,17 @@ public class NewContactFragment extends Fragment {
             Navigation.findNavController(root).navigate(
                     R.id.action_navigation_new_contact_to_navigation_contacts);
             Toast.makeText(getContext(), o.toString(), Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    public void setLoadingDialogListener() {
+        // set the listener for loading status
+        newContactViewModel.getIsLoading().observe(this, o -> {
+            if (newContactViewModel.getIsLoading().getValue()) {
+                loadingDialog.show();
+            } else {
+                loadingDialog.hide();
+            }
         });
     }
 
