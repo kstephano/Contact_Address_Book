@@ -26,7 +26,6 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.contactaddressbook.R;
-import com.google.api.LogDescriptor;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -88,7 +87,7 @@ public class EditContactFragment extends Fragment {
         root = inflater.inflate(R.layout.fragment_edit_contact, container, false);
         // initialise the loading dialog
         loadingDialog = new Dialog(getContext());
-        loadingDialog.setContentView(R.layout.loading_dialog);
+        loadingDialog.setContentView(R.layout.dialog_loading);
 
         if (getArguments() != null) contactID = getArguments().getString("contactID");
 

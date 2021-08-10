@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.ContentResolver;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -26,9 +25,11 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.example.contactaddressbook.R;
+import com.example.contactaddressbook.databinding.FragmentNewContactBinding;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -43,11 +44,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class NewContactFragment extends Fragment {
 
-    private final String TAG = "NewContactViewModel";
+    private final String TAG = "NewContactFragment";
     private Uri profileImageURL;
     private FirebaseFirestore firebaseFirestore;
     private StorageReference storageReference;
-    private final Calendar calendar = Calendar.getInstance();
+    private NewContactViewModel newContactViewModel;
+    private FragmentNewContactBinding binding;
 
     // xml variables
     private View root;
@@ -69,21 +71,34 @@ public class NewContactFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        root = inflater.inflate(R.layout.fragment_new_contact, container, false);
-
         // initialise Firebase variables
         firebaseFirestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference("ImageFolder");
 
+        //root = inflater.inflate(R.layout.fragment_new_contact, container, false);
+
         // initialise the loading dialog
         loadingDialog = new Dialog(getContext());
-        loadingDialog.setContentView(R.layout.loading_dialog);
+        loadingDialog.setContentView(R.layout.dialog_loading);
 
-        initialiseViews();
+        // initialiseViews();
+        // setOnClickListenerImageIV();
+        // setOnClickListenerDobPicker();
+        // setOnClickListenerSubmitBtn();
+        // setOnClickListenerRemovePhoto();
+
+        newContactViewModel =
+                new ViewModelProvider(this).get(NewContactViewModel.class);
+
+        binding = FragmentNewContactBinding.inflate(getLayoutInflater());
+        binding.setNewContactViewModel(newContactViewModel);
+        binding.setOnclicklistener(newContactViewModel);
+        root = binding.getRoot();
+
+        setDialogEventListener();
+        setNavigateEventListener();
         setOnClickListenerImageIV();
-        setOnClickListenerDobPicker();
-        setOnClickListenerSubmitBtn();
-        setOnClickListenerRemovePhoto();
+
 
         return root;
     }
@@ -98,125 +113,42 @@ public class NewContactFragment extends Fragment {
         }
     }
 
-    /**
-     * Checks if the current form is valid to create a new contact.
-     * @return True if valid, false otherwise.
-     */
-    private Boolean isFormValid() {
-        String firstName = firstNameET.getText().toString();
-        String lastName = lastNameET.getText().toString();
-        String phone = phoneET.getText().toString();
-        String email = emailET.getText().toString();
+    public void setDialogEventListener() {
+        newContactViewModel.getDialogEvent().observe(this, o -> {
+            Calendar calendar = Calendar.getInstance();
+            // initialise the DateSetListener
+            DatePickerDialog.OnDateSetListener dateSetListener = (view, year, month, dayOfMonth) -> {
+                calendar.set(Calendar.YEAR, year);
+                calendar.set(Calendar.MONTH, month);
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-        // validate firstName/lastName are filled and phone OR email is filled and valid.
-        return !firstName.isEmpty() && !lastName.isEmpty() &&
-                (!phone.isEmpty() && PhoneNumberUtils.isGlobalPhoneNumber(phone)) ||
-                (!email.isEmpty() && isValidEmail(email));
+                String dateFormat = "dd/MM/yyyy";
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat, Locale.UK);
+                binding.editTextDob.setText(simpleDateFormat.format(calendar.getTime()));
+            };
+
+            // Initialise the data picker dialog and show it
+            DatePickerDialog datePickerDialog = new DatePickerDialog(
+                    getContext(),
+                    R.style.MyDialogTheme,
+                    dateSetListener,
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH)
+            );
+            datePickerDialog.setButton(DatePickerDialog.BUTTON_NEUTRAL, "Clear",
+                    (dialog, which) -> binding.editTextDob.setText(""));
+            datePickerDialog.show();
+        });
     }
 
-    /**
-     * Check if the target input is a valid email address.
-     * @param target The char sequence to check.
-     * @return True if a valid email, false otherwise.
-     */
-    private Boolean isValidEmail(CharSequence target) {
-        return (!TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target).matches());
-    }
-
-    /**
-     * Uploads the form to Firebase, creating a new contact.
-     */
-    private void upLoadToFirebase() {
-        Uri localProfileImageURL = profileImageURL;
-        HashMap<String, Object> contactData = new HashMap<>();
-        String contactID = firstNameET.getText().toString() + lastNameET.getText().toString() +
-                phoneET.getText().toString();
-        // show the loading dialog
-        loadingDialog.show();
-        loadingDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-
-        // upload image if not null
-        if (localProfileImageURL != null) {
-            String imageName = contactID + "." + getExtension(localProfileImageURL);
-            StorageReference imageRef = storageReference.child(imageName);
-
-            // upload image to Firestore
-            UploadTask uploadTask = imageRef.putFile(localProfileImageURL);
-            uploadTask.continueWithTask( task -> {
-               if (!task.isSuccessful()) {
-                   Log.i(TAG, "Couldn't upload image");
-               }
-                return imageRef.getDownloadUrl();
-            }).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    // upload contact to Firestore
-
-                    contactData.put("contactID", contactID);
-                    contactData.put("profileImageURL", task.getResult().toString());
-                    contactData.put("firstName", firstNameET.getText().toString());
-                    contactData.put("lastName", lastNameET.getText().toString());
-                    contactData.put("dob", dobET.getText().toString());
-                    contactData.put("email", emailET.getText().toString());
-                    contactData.put("phone", phoneET.getText().toString());
-                    contactData.put("streetLineOne", streetLineOneET.getText().toString());
-                    contactData.put("streetLineTwo", streetLineTwoET.getText().toString());
-                    contactData.put("city", cityET.getText().toString());
-                    contactData.put("postcode", postcodeET.getText().toString());
-
-                    firebaseFirestore.collection("Contacts")
-                            .document(contactID)
-                            .set(contactData)
-                            .addOnSuccessListener(aVoid -> {
-                                loadingDialog.hide();
-                                // navigate back to the contacts fragment
-                                Navigation.findNavController(getActivity(),
-                                        R.id.nav_host_fragment).
-                                        navigate(R.id.action_navigation_new_contact_to_navigation_contacts);
-                                Toast.makeText(getContext(), "Contact added", Toast.LENGTH_SHORT).show();
-                            });
-                }
-            });
-        } else {
-            // upload with null image url
-            contactData.put("profileImageURL", "null");
-            contactData.put("contactID", contactID);
-            contactData.put("firstName",  firstNameET.getText().toString());
-            contactData.put("lastName", lastNameET.getText().toString());
-            contactData.put("dob", dobET.getText().toString());
-            contactData.put("email", emailET.getText().toString());
-            contactData.put("phone", phoneET.getText().toString());
-            contactData.put("streetLineOne", streetLineOneET.getText().toString());
-            contactData.put("streetLineTwo", streetLineTwoET.getText().toString());
-            contactData.put("city", cityET.getText().toString());
-            contactData.put("postcode", postcodeET.getText().toString());
-
-            firebaseFirestore.collection("Contacts")
-                    .document(contactID)
-                    .set(contactData)
-                    .addOnSuccessListener(aVoid -> {
-                        loadingDialog.hide();
-                        // navigate back to the contacts fragment
-                        Navigation.findNavController(root).navigate(
-                                R.id.action_navigation_new_contact_to_navigation_contacts);
-                        Toast.makeText(getContext(), "Contact added", Toast.LENGTH_SHORT).show();
-                    }).addOnFailureListener(e -> {
-                        loadingDialog.hide();
-                        Log.d(TAG, "Couldn't upload contact: " + e.getMessage());
-            });
-        }
-
-    }
-
-    /**
-     * Set the onClickListener for the submit button.
-     */
-    private void setOnClickListenerSubmitBtn() {
-        submitBtn.setOnClickListener(v -> {
-            if (isFormValid()) {
-                upLoadToFirebase();
-            } else {
-                Toast.makeText(getContext(), "Invalid contact", Toast.LENGTH_SHORT).show();
-            }
+    public void setNavigateEventListener() {
+        // set the listener for the navigate event
+        newContactViewModel.getNavigateEvent().observe(this, o -> {
+            // navigate back to the contacts fragment
+            Navigation.findNavController(root).navigate(
+                    R.id.action_navigation_new_contact_to_navigation_contacts);
+            Toast.makeText(getContext(), o.toString(), Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -232,8 +164,9 @@ public class NewContactFragment extends Fragment {
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         Intent data = result.getData();
                         if (data.getData() != null) {
-                            profileImageURL = data.getData();
-                            profileIV.setImageURI(profileImageURL);
+                            newContactViewModel.setProfileImageURL(data.getData());
+                            binding.imageViewProfile.setImageURI(
+                                    newContactViewModel.getProfileImageURL().getValue());
                         } else {
                             Toast.makeText(getContext(), "No image selected",
                                     Toast.LENGTH_SHORT).show();
@@ -243,7 +176,7 @@ public class NewContactFragment extends Fragment {
         );
 
         // set the onClickListener for the Image View
-        profileIV.setOnClickListener(v -> {
+        binding.imageViewProfile.setOnClickListener(v -> {
             try {
                 Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
                 galleryIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
@@ -253,8 +186,7 @@ public class NewContactFragment extends Fragment {
             }
         });
 
-        // set the onClickListener for the add photo Text View
-        addPhotoTV.setOnClickListener(v -> {
+        binding.textAddPhoto.setOnClickListener(v -> {
             try {
                 Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
                 galleryIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
@@ -269,46 +201,16 @@ public class NewContactFragment extends Fragment {
      * Set the onClickListener for the remove photo Text View.
      */
     private void setOnClickListenerRemovePhoto() {
-        removePhotoTV.setOnClickListener(v -> {
+        binding.textRemovePhoto.setOnClickListener(v -> {
             int image = R.drawable.ic_baseline_account_circle_24;
-            profileIV.setImageResource(image);
-            profileImageURL = null;
+            binding.imageViewProfile.setImageResource(image);
+            newContactViewModel.setProfileImageURL(null);
             removePhotoTV.setText("");
-            addPhotoTV.setText(getResources().getString(R.string.text_add_photo));
+            binding.textRemovePhoto.setText("");
+            binding.textAddPhoto.setText(getResources().getString(R.string.text_add_photo));
         });
     }
 
-    /**
-     * Set the DatePickerDialog OnDateSetListener and the onClick for the
-     * dobET to open up the dialog onCLick.
-     */
-    private void setOnClickListenerDobPicker() {
-        // initialise the DateSetListener
-        DatePickerDialog.OnDateSetListener dateSetListener = (view, year, month, dayOfMonth) -> {
-            calendar.set(Calendar.YEAR, year);
-            calendar.set(Calendar.MONTH, month);
-            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
-            String dateFormat = "dd/MM/yyyy";
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat, Locale.UK);
-            dobET.setText(simpleDateFormat.format(calendar.getTime()));
-        };
-
-        // set onClickListener for dobET
-        dobET.setOnClickListener(v -> {
-            DatePickerDialog datePickerDialog = new DatePickerDialog(
-                    getContext(),
-                    R.style.MyDialogTheme,
-                    dateSetListener,
-                    calendar.get(Calendar.YEAR),
-                    calendar.get(Calendar.MONTH),
-                    calendar.get(Calendar.DAY_OF_MONTH)
-            );
-            datePickerDialog.setButton(DatePickerDialog.BUTTON_NEUTRAL, "Clear",
-                    (dialog, which) -> dobET.setText(""));
-            datePickerDialog.show();
-        });
-    }
 
     /**
      * Get the extension for an image given a Uri.
@@ -325,24 +227,5 @@ public class NewContactFragment extends Fragment {
             Log.d(TAG, "Couldn't get extension");
         }
         return extension;
-    }
-
-    /**
-     * Attach XML views to Java objects.
-     */
-    private void initialiseViews() {
-        profileIV = root.findViewById(R.id.image_view_profile);
-        addPhotoTV = root.findViewById(R.id.text_add_photo);
-        removePhotoTV = root.findViewById(R.id.text_remove_photo);
-        firstNameET = root.findViewById(R.id.edit_text_first_name);
-        lastNameET = root.findViewById(R.id.edit_text_last_name);
-        dobET = root.findViewById(R.id.edit_text_dob);
-        emailET = root.findViewById(R.id.edit_text_email);
-        phoneET = root.findViewById(R.id.edit_text_telephone);
-        streetLineOneET = root.findViewById(R.id.edit_text_street_one);
-        streetLineTwoET = root.findViewById(R.id.edit_text_street_two);
-        cityET = root.findViewById(R.id.edit_text_city);
-        postcodeET = root.findViewById(R.id.edit_text_postcode);
-        submitBtn = root.findViewById(R.id.button_submit);
     }
 }

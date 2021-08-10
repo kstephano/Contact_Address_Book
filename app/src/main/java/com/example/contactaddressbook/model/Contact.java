@@ -2,9 +2,8 @@ package com.example.contactaddressbook.model;
 
 public class Contact implements Comparable<Contact> {
 
-    private String phone;
-
     private String contactID;
+    private String phone;
     private String firstName;
     private String lastName;
     private String dob;
