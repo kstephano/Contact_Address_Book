@@ -39,6 +39,7 @@ public class NewContactViewModel extends AndroidViewModel implements OnClickList
     // mutable live data variables
     private final SingleLiveEvent<String> navigateEvent = new SingleLiveEvent<>();
     private final SingleLiveEvent<String> dialogEvent = new SingleLiveEvent<>();
+    private final SingleLiveEvent<String> toastEvent = new SingleLiveEvent<>();
     private final MutableLiveData<String> firstName = new MutableLiveData<>("");
     private final MutableLiveData<String> lastName = new MutableLiveData<>("");
     private final MutableLiveData<String> dob = new MutableLiveData<>("");
@@ -56,7 +57,6 @@ public class NewContactViewModel extends AndroidViewModel implements OnClickList
     private Contact newContact;
     private final FirebaseFirestore firebaseFirestore;
     private final StorageReference storageReference;
-    private final Calendar calendar = Calendar.getInstance();
 
     public NewContactViewModel(Application application) {
         super(application);
@@ -64,6 +64,18 @@ public class NewContactViewModel extends AndroidViewModel implements OnClickList
         storageReference = FirebaseStorage.getInstance().getReference("ImageFolder");
     }
 
+    /**
+     * Uploads the form to Firebase Firestore when the submit button is clicked.
+     * @param firstName First name of the new contact.
+     * @param lastName Last name of the new contact.
+     * @param phone Phone number of the new contact.
+     * @param email Email address of the new contact.
+     * @param dob Date of birth of the new contact.
+     * @param streetOne Street line one of the new contact.
+     * @param streetTwo Street line two of the new contact.
+     * @param city City of the new contact.
+     * @param postcode Postcode of the new contact.
+     */
     @Override
     public void onSubmitClick(
             MutableLiveData<String> firstName,
@@ -76,6 +88,7 @@ public class NewContactViewModel extends AndroidViewModel implements OnClickList
             MutableLiveData<String> city,
             MutableLiveData<String> postcode) {
         Log.d(TAG, "onSubmitClick pressed");
+        // check if the form is valid
         if (isFormValid(firstName.getValue(),
                 lastName.getValue(),
                 phone.getValue(),
@@ -161,7 +174,9 @@ public class NewContactViewModel extends AndroidViewModel implements OnClickList
                 });
             }
         }
-
+        else {
+            toastEvent.setValue("Invalid contact");
+        }
     }
 
     @Override
@@ -211,6 +226,7 @@ public class NewContactViewModel extends AndroidViewModel implements OnClickList
 
     public SingleLiveEvent<String> getDialogEvent() { return dialogEvent; }
 
+    public SingleLiveEvent<String> getToastEvent() { return toastEvent; }
 
     public MutableLiveData<String> getFirstName() { return firstName; }
 

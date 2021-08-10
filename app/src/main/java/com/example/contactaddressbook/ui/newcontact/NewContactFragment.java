@@ -69,6 +69,7 @@ public class NewContactFragment extends Fragment {
 
         setDialogEventListener();
         setNavigateEventListener();
+        setToastEventListener();
         setLoadingDialogListener();
         setOnClickListenerImageIV();
         setOnClickListenerRemovePhoto();
@@ -86,6 +87,10 @@ public class NewContactFragment extends Fragment {
         }
     }
 
+    /**
+     * Set the listener to show the Date Picker Dialog when the a dialog event
+     * has been received.
+     */
     public void setDialogEventListener() {
         newContactViewModel.getDialogEvent().observe(this, o -> {
             Calendar calendar = Calendar.getInstance();
@@ -115,6 +120,10 @@ public class NewContactFragment extends Fragment {
         });
     }
 
+    /**
+     * Set the listener to navigate back to the Contacts fragment
+     * when a navigation event has been received.
+     */
     public void setNavigateEventListener() {
         // set the listener for the navigate event
         newContactViewModel.getNavigateEvent().observe(this, o -> {
@@ -125,14 +134,29 @@ public class NewContactFragment extends Fragment {
         });
     }
 
+    /**
+     * Set the listener to show or hide the loading dialog
+     * depending on the state of the isLoading variable in NewContactViewModel.
+     */
     public void setLoadingDialogListener() {
         // set the listener for loading status
-        newContactViewModel.getIsLoading().observe(this, o -> {
+        newContactViewModel.getIsLoading().observe(getViewLifecycleOwner(), o -> {
             if (newContactViewModel.getIsLoading().getValue()) {
                 loadingDialog.show();
             } else {
                 loadingDialog.hide();
             }
+        });
+    }
+
+    /**
+     * Set the listener for toast events.
+     * Displays the given toast message when an event is received.
+     */
+    public void setToastEventListener() {
+        newContactViewModel.getToastEvent().observe(this, o -> {
+            // generate the toast message
+            Toast.makeText(getContext(), o.toString(), Toast.LENGTH_SHORT).show();
         });
     }
 
