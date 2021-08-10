@@ -45,51 +45,22 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class NewContactFragment extends Fragment {
 
     private final String TAG = "NewContactFragment";
-    private Uri profileImageURL;
-    private FirebaseFirestore firebaseFirestore;
-    private StorageReference storageReference;
     private NewContactViewModel newContactViewModel;
     private FragmentNewContactBinding binding;
 
     // xml variables
     private View root;
-    private CircleImageView profileIV;
-    private TextView addPhotoTV;
-    private TextView removePhotoTV;
-    private EditText firstNameET;
-    private EditText lastNameET;
-    private EditText dobET;
-    private EditText emailET;
-    private EditText phoneET;
-    private EditText streetLineOneET;
-    private EditText streetLineTwoET;
-    private EditText cityET;
-    private EditText postcodeET;
-    private Button submitBtn;
     private Dialog loadingDialog;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        // initialise Firebase variables
-        firebaseFirestore = FirebaseFirestore.getInstance();
-        storageReference = FirebaseStorage.getInstance().getReference("ImageFolder");
-
-        //root = inflater.inflate(R.layout.fragment_new_contact, container, false);
-
         // initialise the loading dialog
         loadingDialog = new Dialog(getContext());
         loadingDialog.setContentView(R.layout.dialog_loading);
-
-        // initialiseViews();
-        // setOnClickListenerImageIV();
-        // setOnClickListenerDobPicker();
-        // setOnClickListenerSubmitBtn();
-        // setOnClickListenerRemovePhoto();
-
+        // initialise view model and binding
         newContactViewModel =
                 new ViewModelProvider(this).get(NewContactViewModel.class);
-
         binding = FragmentNewContactBinding.inflate(getLayoutInflater());
         binding.setNewContactViewModel(newContactViewModel);
         binding.setOnclicklistener(newContactViewModel);
@@ -98,7 +69,7 @@ public class NewContactFragment extends Fragment {
         setDialogEventListener();
         setNavigateEventListener();
         setOnClickListenerImageIV();
-
+        setOnClickListenerRemovePhoto();
 
         return root;
     }
@@ -107,9 +78,9 @@ public class NewContactFragment extends Fragment {
     public void onResume() {
         super.onResume();
         // check if user has selected an image and display appropriate Text View.
-        if (profileImageURL != null) {
-            removePhotoTV.setText(R.string.text_remove_photo);
-            addPhotoTV.setText("");
+        if (newContactViewModel.getProfileImageURL().getValue() != null) {
+            binding.textRemovePhoto.setText(R.string.text_remove_photo);
+            binding.textAddPhoto.setText("");
         }
     }
 
@@ -205,27 +176,8 @@ public class NewContactFragment extends Fragment {
             int image = R.drawable.ic_baseline_account_circle_24;
             binding.imageViewProfile.setImageResource(image);
             newContactViewModel.setProfileImageURL(null);
-            removePhotoTV.setText("");
             binding.textRemovePhoto.setText("");
             binding.textAddPhoto.setText(getResources().getString(R.string.text_add_photo));
         });
-    }
-
-
-    /**
-     * Get the extension for an image given a Uri.
-     * @param uri The Uri of an image.
-     * @return The file extension for the given Uri, or null.
-     */
-    private String getExtension(Uri uri) {
-        String extension = null;
-        try {
-            ContentResolver contentResolver = getContext().getContentResolver();
-            MimeTypeMap mime = MimeTypeMap.getSingleton();
-            extension = mime.getExtensionFromMimeType(contentResolver.getType(uri));
-        } catch (Exception e) {
-            Log.d(TAG, "Couldn't get extension");
-        }
-        return extension;
     }
 }

@@ -37,7 +37,7 @@ import java.util.Calendar;
 public class NewContactViewModel extends AndroidViewModel implements OnClickListener {
 
     // mutable live data variables
-    private final SingleLiveEvent<String> navigateEvent = new SingleLiveEvent();
+    private final SingleLiveEvent<String> navigateEvent = new SingleLiveEvent<>();
     private final SingleLiveEvent<String> dialogEvent = new SingleLiveEvent<>();
     private final MutableLiveData<String> firstName = new MutableLiveData<>("");
     private final MutableLiveData<String> lastName = new MutableLiveData<>("");
@@ -68,14 +68,14 @@ public class NewContactViewModel extends AndroidViewModel implements OnClickList
     public void onSubmitClick(
             MutableLiveData<String> firstName,
             MutableLiveData<String> lastName,
-            MutableLiveData<String> dob,
-            MutableLiveData<String> email,
             MutableLiveData<String> phone,
+            MutableLiveData<String> email,
+            MutableLiveData<String> dob,
             MutableLiveData<String> streetOne,
             MutableLiveData<String> streetTwo,
             MutableLiveData<String> city,
             MutableLiveData<String> postcode) {
-
+        Log.d(TAG, "onSubmitClick pressed");
         if (isFormValid(firstName.getValue(),
                 lastName.getValue(),
                 phone.getValue(),
@@ -207,7 +207,7 @@ public class NewContactViewModel extends AndroidViewModel implements OnClickList
         return extension;
     }
 
-    public SingleLiveEvent getNavigateEvent() { return navigateEvent; }
+    public SingleLiveEvent<String> getNavigateEvent() { return navigateEvent; }
 
     public SingleLiveEvent<String> getDialogEvent() { return dialogEvent; }
 

@@ -6,9 +6,9 @@ public interface OnClickListener {
     void onSubmitClick(
             MutableLiveData<String> firstName,
             MutableLiveData<String> lastName,
-            MutableLiveData<String> dob,
-            MutableLiveData<String> email,
             MutableLiveData<String> phone,
+            MutableLiveData<String> email,
+            MutableLiveData<String> dob,
             MutableLiveData<String> streetOne,
             MutableLiveData<String> streetTwo,
             MutableLiveData<String> city,

@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Class to handle a single event.
  */
-public class SingleLiveEvent<T> extends MutableLiveData<T> {
+public class SingleLiveEvent<String> extends MutableLiveData<String> {
     private final AtomicBoolean mPending = new AtomicBoolean(false);
 
     @MainThread
@@ -27,7 +27,7 @@ public class SingleLiveEvent<T> extends MutableLiveData<T> {
     }
 
     @MainThread
-    public void setValue(@Nullable T t) {
+    public void setValue(@Nullable String t) {
         this.mPending.set(true);
         super.setValue(t);
     }
