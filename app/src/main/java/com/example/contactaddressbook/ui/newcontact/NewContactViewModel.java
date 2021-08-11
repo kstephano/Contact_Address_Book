@@ -1,40 +1,27 @@
 package com.example.contactaddressbook.ui.newcontact;
 
-import android.app.AlertDialog;
 import android.app.Application;
-import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.util.Patterns;
-import android.view.LayoutInflater;
 import android.webkit.MimeTypeMap;
-import android.widget.EditText;
-import android.widget.Toast;
 
-import androidx.databinding.BindingAdapter;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableField;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
-import androidx.navigation.Navigation;
 
-import com.example.contactaddressbook.R;
 import com.example.contactaddressbook.events.SingleLiveEvent;
-import com.example.contactaddressbook.listener.OnClickListener;
+import com.example.contactaddressbook.listener.NewContactOnClickListener;
 import com.example.contactaddressbook.model.Contact;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.util.Calendar;
-
-public class NewContactViewModel extends AndroidViewModel implements OnClickListener {
+public class NewContactViewModel extends AndroidViewModel implements NewContactOnClickListener {
 
     // mutable live data variables
     private final SingleLiveEvent<String> navigateEvent = new SingleLiveEvent<>();
@@ -87,7 +74,6 @@ public class NewContactViewModel extends AndroidViewModel implements OnClickList
             MutableLiveData<String> streetTwo,
             MutableLiveData<String> city,
             MutableLiveData<String> postcode) {
-        Log.d(TAG, "onSubmitClick pressed");
         // check if the form is valid
         if (isFormValid(firstName.getValue(),
                 lastName.getValue(),
@@ -173,15 +159,14 @@ public class NewContactViewModel extends AndroidViewModel implements OnClickList
                     Log.d(TAG, "Couldn't upload user: " + e.getMessage());
                 });
             }
-        }
-        else {
+        } else {
             toastEvent.setValue("Invalid contact");
         }
     }
 
     @Override
     public void onShowDialog() {
-        dialogEvent.setValue("Open dialog");
+        dialogEvent.setValue("Contact added");
     }
 
     /**

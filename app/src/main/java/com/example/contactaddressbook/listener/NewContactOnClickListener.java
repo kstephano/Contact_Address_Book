@@ -2,7 +2,7 @@ package com.example.contactaddressbook.listener;
 
 import androidx.lifecycle.MutableLiveData;
 
-public interface OnClickListener {
+public interface NewContactOnClickListener {
     void onSubmitClick(
             MutableLiveData<String> firstName,
             MutableLiveData<String> lastName,

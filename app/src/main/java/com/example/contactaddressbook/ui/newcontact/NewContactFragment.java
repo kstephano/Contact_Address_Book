@@ -59,12 +59,13 @@ public class NewContactFragment extends Fragment {
         loadingDialog = new Dialog(getContext());
         loadingDialog.setContentView(R.layout.dialog_loading);
         loadingDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
         // initialise view model and binding
         newContactViewModel =
                 new ViewModelProvider(this).get(NewContactViewModel.class);
         binding = FragmentNewContactBinding.inflate(getLayoutInflater());
         binding.setNewContactViewModel(newContactViewModel);
-        binding.setOnclicklistener(newContactViewModel);
+        binding.setNewcontactonclicklistener(newContactViewModel);
         root = binding.getRoot();
 
         setDialogEventListener();
@@ -141,10 +142,12 @@ public class NewContactFragment extends Fragment {
     public void setLoadingDialogListener() {
         // set the listener for loading status
         newContactViewModel.getIsLoading().observe(getViewLifecycleOwner(), o -> {
-            if (newContactViewModel.getIsLoading().getValue()) {
-                loadingDialog.show();
-            } else {
-                loadingDialog.hide();
+            if (newContactViewModel.getIsLoading().getValue() != null) {
+                if (newContactViewModel.getIsLoading().getValue()) {
+                    loadingDialog.show();
+                } else {
+                    loadingDialog.hide();
+                }
             }
         });
     }

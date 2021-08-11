@@ -10,8 +10,8 @@
             type="com.example.contactaddressbook.ui.newcontact.NewContactViewModel" />
 
         <variable
-            name="onclicklistener"
-            type="com.example.contactaddressbook.listener.OnClickListener" />
+            name="newcontactonclicklistener"
+            type="com.example.contactaddressbook.listener.NewContactOnClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -295,9 +295,7 @@
                         app:layout_constraintTop_toBottomOf="@id/text_layout_postcode" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
-
             </androidx.core.widget.NestedScrollView>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
