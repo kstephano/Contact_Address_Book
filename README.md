@@ -1,5 +1,5 @@
 # Contact_Address_Book
-Simple contact address book project made for Unity5 using Java and Android Studio.
+Simple contact address book project made using Java and Android Studio.
 
 Main features: add, edit and delete contacts saved in Amazon Cloud Firestore; view records uploaded from the database; make phone calls from within the app.
 
